@@ -60,176 +60,6 @@
     "correct": null
   },
   {
-    "sport": "nba",
-    "league": "NBA",
-    "home_team": "New York Knicks",
-    "away_team": "Atlanta Hawks",
-    "predicted_winner": "New York Knicks",
-    "confidence": 52.0,
-    "factors": {},
-    "factor_scores": {
-      "record": 0.5,
-      "recent_form": 0.5,
-      "head_to_head": 0.5,
-      "points_avg": 0.5
-    },
-    "event_id": "2467678",
-    "timestamp": "2026-04-28T16:23:35.447399",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "nba",
-    "league": "NBA",
-    "home_team": "San Antonio Spurs",
-    "away_team": "Portland Trail Blazers",
-    "predicted_winner": "San Antonio Spurs",
-    "confidence": 52.0,
-    "factors": {},
-    "factor_scores": {
-      "record": 0.5,
-      "recent_form": 0.5,
-      "head_to_head": 0.5,
-      "points_avg": 0.5
-    },
-    "event_id": "2467679",
-    "timestamp": "2026-04-28T16:23:35.455721",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "nba",
-    "league": "NBA",
-    "home_team": "Detroit Pistons",
-    "away_team": "Orlando Magic",
-    "predicted_winner": "Detroit Pistons",
-    "confidence": 52.0,
-    "factors": {},
-    "factor_scores": {
-      "record": 0.5,
-      "recent_form": 0.5,
-      "head_to_head": 0.5,
-      "points_avg": 0.5
-    },
-    "event_id": "2467960",
-    "timestamp": "2026-04-28T16:23:35.464017",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "lol",
-    "league": "LJL",
-    "home_team": "Uwinks",
-    "away_team": "DetonatioN FocusMe Academy",
-    "predicted_winner": "Uwinks",
-    "confidence": 52.0,
-    "factors": {
-      "side_preference": "🔵 Uwinks blue side (52% avg)"
-    },
-    "factor_scores": {
-      "win_rate": 0.5,
-      "tournament_position": 0.5,
-      "head_to_head": 0.5,
-      "side_preference": 0.52
-    },
-    "event_id": "1465566",
-    "timestamp": "2026-04-28T16:23:35.474706",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "lol",
-    "league": "LCK",
-    "home_team": "Nongshim Red Force",
-    "away_team": "T1",
-    "predicted_winner": "Nongshim Red Force",
-    "confidence": 52.0,
-    "factors": {
-      "side_preference": "🔵 Nongshim Red Force blue side (52% avg)"
-    },
-    "factor_scores": {
-      "win_rate": 0.5,
-      "tournament_position": 0.5,
-      "head_to_head": 0.5,
-      "side_preference": 0.52
-    },
-    "event_id": "1413460",
-    "timestamp": "2026-04-28T16:23:35.484019",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "lol",
-    "league": "LPL",
-    "home_team": "Ninjas in Pyjamas",
-    "away_team": "JD Gaming",
-    "predicted_winner": "Ninjas in Pyjamas",
-    "confidence": 52.0,
-    "factors": {
-      "side_preference": "🔵 Ninjas in Pyjamas blue side (52% avg)"
-    },
-    "factor_scores": {
-      "win_rate": 0.5,
-      "tournament_position": 0.5,
-      "head_to_head": 0.5,
-      "side_preference": 0.52
-    },
-    "event_id": "1420926",
-    "timestamp": "2026-04-28T16:23:35.494359",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "lol",
-    "league": "LCK",
-    "home_team": "KT Rolster",
-    "away_team": "Hanwha Life Esports",
-    "predicted_winner": "KT Rolster",
-    "confidence": 52.0,
-    "factors": {
-      "side_preference": "🔵 KT Rolster blue side (52% avg)"
-    },
-    "factor_scores": {
-      "win_rate": 0.5,
-      "tournament_position": 0.5,
-      "head_to_head": 0.5,
-      "side_preference": 0.52
-    },
-    "event_id": "1413461",
-    "timestamp": "2026-04-28T16:23:35.503683",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "lol",
-    "league": "LJL",
-    "home_team": "L Guide Gaming",
-    "away_team": "Rising Gaming",
-    "predicted_winner": "L Guide Gaming",
-    "confidence": 52.0,
-    "factors": {
-      "side_preference": "🔵 L Guide Gaming blue side (52% avg)"
-    },
-    "factor_scores": {
-      "win_rate": 0.5,
-      "tournament_position": 0.5,
-      "head_to_head": 0.5,
-      "side_preference": 0.52
-    },
-    "event_id": "1465567",
-    "timestamp": "2026-04-28T16:23:35.512481",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
     "sport": "football",
     "league": "Champions League",
     "home_team": "Paris SG",
@@ -247,7 +77,7 @@
       "goals_form": 0.5
     },
     "event_id": "2466172",
-    "timestamp": "2026-04-28T16:24:41.662270",
+    "timestamp": "2026-04-28T16:57:43.153805",
     "verified": false,
     "actual_winner": null,
     "correct": null
@@ -270,7 +100,453 @@
       "goals_form": 0.5
     },
     "event_id": "2466173",
-    "timestamp": "2026-04-28T16:24:41.664890",
+    "timestamp": "2026-04-28T16:57:43.156964",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Libertadores",
+    "home_team": "Lanús",
+    "away_team": "Liga de Quito",
+    "predicted_winner": "Lanús",
+    "confidence": 52.0,
+    "factors": {
+      "home_advantage": "🏠 Ventaja local: Lanús"
+    },
+    "factor_scores": {
+      "table_position": 0.5,
+      "recent_form": 0.5,
+      "home_advantage": 0.58,
+      "head_to_head": 0.5,
+      "goals_form": 0.5
+    },
+    "event_id": "espn_401865510",
+    "timestamp": "2026-04-28T16:57:43.203210",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Libertadores",
+    "home_team": "Libertad",
+    "away_team": "Independiente del Valle",
+    "predicted_winner": "Libertad",
+    "confidence": 52.0,
+    "factors": {
+      "home_advantage": "🏠 Ventaja local: Libertad"
+    },
+    "factor_scores": {
+      "table_position": 0.5,
+      "recent_form": 0.5,
+      "home_advantage": 0.58,
+      "head_to_head": 0.5,
+      "goals_form": 0.5
+    },
+    "event_id": "espn_401865511",
+    "timestamp": "2026-04-28T16:57:43.212155",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Libertadores",
+    "home_team": "Universidad Central",
+    "away_team": "Rosario Central",
+    "predicted_winner": "Universidad Central",
+    "confidence": 52.0,
+    "factors": {
+      "home_advantage": "🏠 Ventaja local: Universidad Central"
+    },
+    "factor_scores": {
+      "table_position": 0.5,
+      "recent_form": 0.5,
+      "home_advantage": 0.58,
+      "head_to_head": 0.5,
+      "goals_form": 0.5
+    },
+    "event_id": "espn_401865515",
+    "timestamp": "2026-04-28T16:57:43.221710",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Libertadores",
+    "home_team": "Cruzeiro",
+    "away_team": "Boca Juniors",
+    "predicted_winner": "Cruzeiro",
+    "confidence": 52.0,
+    "factors": {
+      "home_advantage": "🏠 Ventaja local: Cruzeiro"
+    },
+    "factor_scores": {
+      "table_position": 0.5,
+      "recent_form": 0.5,
+      "home_advantage": 0.58,
+      "head_to_head": 0.5,
+      "goals_form": 0.5
+    },
+    "event_id": "espn_401865505",
+    "timestamp": "2026-04-28T16:57:43.231587",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Libertadores",
+    "home_team": "Deportes Tolima",
+    "away_team": "Coquimbo Unido",
+    "predicted_winner": "Deportes Tolima",
+    "confidence": 52.0,
+    "factors": {
+      "home_advantage": "🏠 Ventaja local: Deportes Tolima"
+    },
+    "factor_scores": {
+      "table_position": 0.5,
+      "recent_form": 0.5,
+      "home_advantage": 0.58,
+      "head_to_head": 0.5,
+      "goals_form": 0.5
+    },
+    "event_id": "espn_401865506",
+    "timestamp": "2026-04-28T16:57:43.240375",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Libertadores",
+    "home_team": "Sporting Cristal",
+    "away_team": "Atlético Junior",
+    "predicted_winner": "Sporting Cristal",
+    "confidence": 52.0,
+    "factors": {
+      "home_advantage": "🏠 Ventaja local: Sporting Cristal"
+    },
+    "factor_scores": {
+      "table_position": 0.5,
+      "recent_form": 0.5,
+      "home_advantage": 0.58,
+      "head_to_head": 0.5,
+      "goals_form": 0.5
+    },
+    "event_id": "espn_401865514",
+    "timestamp": "2026-04-28T16:57:43.249781",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Sudamericana",
+    "home_team": "Botafogo",
+    "away_team": "Independiente Petrolero",
+    "predicted_winner": "Botafogo",
+    "confidence": 52.0,
+    "factors": {
+      "home_advantage": "🏠 Ventaja local: Botafogo"
+    },
+    "factor_scores": {
+      "table_position": 0.5,
+      "recent_form": 0.5,
+      "home_advantage": 0.58,
+      "head_to_head": 0.5,
+      "goals_form": 0.5
+    },
+    "event_id": "espn_401865405",
+    "timestamp": "2026-04-28T16:57:43.259285",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Sudamericana",
+    "home_team": "San Lorenzo",
+    "away_team": "Santos",
+    "predicted_winner": "San Lorenzo",
+    "confidence": 52.0,
+    "factors": {
+      "home_advantage": "🏠 Ventaja local: San Lorenzo"
+    },
+    "factor_scores": {
+      "table_position": 0.5,
+      "recent_form": 0.5,
+      "home_advantage": 0.58,
+      "head_to_head": 0.5,
+      "goals_form": 0.5
+    },
+    "event_id": "espn_401865416",
+    "timestamp": "2026-04-28T16:57:43.268130",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Sudamericana",
+    "home_team": "Barracas Central",
+    "away_team": "Audax Italiano",
+    "predicted_winner": "Barracas Central",
+    "confidence": 52.0,
+    "factors": {
+      "home_advantage": "🏠 Ventaja local: Barracas Central"
+    },
+    "factor_scores": {
+      "table_position": 0.5,
+      "recent_form": 0.5,
+      "home_advantage": 0.58,
+      "head_to_head": 0.5,
+      "goals_form": 0.5
+    },
+    "event_id": "espn_401865404",
+    "timestamp": "2026-04-28T16:57:43.276567",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Sudamericana",
+    "home_team": "Deportivo Recoleta",
+    "away_team": "Deportivo Cuenca",
+    "predicted_winner": "Deportivo Recoleta",
+    "confidence": 52.0,
+    "factors": {
+      "home_advantage": "🏠 Ventaja local: Deportivo Recoleta"
+    },
+    "factor_scores": {
+      "table_position": 0.5,
+      "recent_form": 0.5,
+      "home_advantage": 0.58,
+      "head_to_head": 0.5,
+      "goals_form": 0.5
+    },
+    "event_id": "espn_401865415",
+    "timestamp": "2026-04-28T16:57:43.284855",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Sudamericana",
+    "home_team": "Millonarios",
+    "away_team": "São Paulo",
+    "predicted_winner": "Millonarios",
+    "confidence": 52.0,
+    "factors": {
+      "home_advantage": "🏠 Ventaja local: Millonarios"
+    },
+    "factor_scores": {
+      "table_position": 0.5,
+      "recent_form": 0.5,
+      "home_advantage": 0.58,
+      "head_to_head": 0.5,
+      "goals_form": 0.5
+    },
+    "event_id": "espn_401865411",
+    "timestamp": "2026-04-28T16:57:43.295317",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Sudamericana",
+    "home_team": "O'Higgins",
+    "away_team": "Boston River",
+    "predicted_winner": "O'Higgins",
+    "confidence": 52.0,
+    "factors": {
+      "home_advantage": "🏠 Ventaja local: O'Higgins"
+    },
+    "factor_scores": {
+      "table_position": 0.5,
+      "recent_form": 0.5,
+      "home_advantage": 0.58,
+      "head_to_head": 0.5,
+      "goals_form": 0.5
+    },
+    "event_id": "espn_401865412",
+    "timestamp": "2026-04-28T16:57:43.306682",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "nba",
+    "league": "NBA",
+    "home_team": "New York Knicks",
+    "away_team": "Atlanta Hawks",
+    "predicted_winner": "New York Knicks",
+    "confidence": 52.0,
+    "factors": {},
+    "factor_scores": {
+      "record": 0.5,
+      "recent_form": 0.5,
+      "head_to_head": 0.5,
+      "points_avg": 0.5
+    },
+    "event_id": "2467678",
+    "timestamp": "2026-04-28T16:57:43.368465",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "nba",
+    "league": "NBA",
+    "home_team": "San Antonio Spurs",
+    "away_team": "Portland Trail Blazers",
+    "predicted_winner": "San Antonio Spurs",
+    "confidence": 52.0,
+    "factors": {},
+    "factor_scores": {
+      "record": 0.5,
+      "recent_form": 0.5,
+      "head_to_head": 0.5,
+      "points_avg": 0.5
+    },
+    "event_id": "2467679",
+    "timestamp": "2026-04-28T16:57:43.381577",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "nba",
+    "league": "NBA",
+    "home_team": "Detroit Pistons",
+    "away_team": "Orlando Magic",
+    "predicted_winner": "Detroit Pistons",
+    "confidence": 52.0,
+    "factors": {},
+    "factor_scores": {
+      "record": 0.5,
+      "recent_form": 0.5,
+      "head_to_head": 0.5,
+      "points_avg": 0.5
+    },
+    "event_id": "2467960",
+    "timestamp": "2026-04-28T16:57:43.392961",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "lol",
+    "league": "LJL",
+    "home_team": "Uwinks",
+    "away_team": "DetonatioN FocusMe Academy",
+    "predicted_winner": "Uwinks",
+    "confidence": 52.0,
+    "factors": {
+      "side_preference": "🔵 Uwinks blue side (52% avg)"
+    },
+    "factor_scores": {
+      "win_rate": 0.5,
+      "tournament_position": 0.5,
+      "head_to_head": 0.5,
+      "side_preference": 0.52
+    },
+    "event_id": "1465566",
+    "timestamp": "2026-04-28T16:57:43.425416",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "lol",
+    "league": "LCK",
+    "home_team": "Nongshim Red Force",
+    "away_team": "T1",
+    "predicted_winner": "Nongshim Red Force",
+    "confidence": 52.0,
+    "factors": {
+      "side_preference": "🔵 Nongshim Red Force blue side (52% avg)"
+    },
+    "factor_scores": {
+      "win_rate": 0.5,
+      "tournament_position": 0.5,
+      "head_to_head": 0.5,
+      "side_preference": 0.52
+    },
+    "event_id": "1413460",
+    "timestamp": "2026-04-28T16:57:43.436201",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "lol",
+    "league": "LPL",
+    "home_team": "Ninjas in Pyjamas",
+    "away_team": "JD Gaming",
+    "predicted_winner": "Ninjas in Pyjamas",
+    "confidence": 52.0,
+    "factors": {
+      "side_preference": "🔵 Ninjas in Pyjamas blue side (52% avg)"
+    },
+    "factor_scores": {
+      "win_rate": 0.5,
+      "tournament_position": 0.5,
+      "head_to_head": 0.5,
+      "side_preference": 0.52
+    },
+    "event_id": "1420926",
+    "timestamp": "2026-04-28T16:57:43.445971",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "lol",
+    "league": "LCK",
+    "home_team": "KT Rolster",
+    "away_team": "Hanwha Life Esports",
+    "predicted_winner": "KT Rolster",
+    "confidence": 52.0,
+    "factors": {
+      "side_preference": "🔵 KT Rolster blue side (52% avg)"
+    },
+    "factor_scores": {
+      "win_rate": 0.5,
+      "tournament_position": 0.5,
+      "head_to_head": 0.5,
+      "side_preference": 0.52
+    },
+    "event_id": "1413461",
+    "timestamp": "2026-04-28T16:57:43.455821",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "lol",
+    "league": "LJL",
+    "home_team": "L Guide Gaming",
+    "away_team": "Rising Gaming",
+    "predicted_winner": "L Guide Gaming",
+    "confidence": 52.0,
+    "factors": {
+      "side_preference": "🔵 L Guide Gaming blue side (52% avg)"
+    },
+    "factor_scores": {
+      "win_rate": 0.5,
+      "tournament_position": 0.5,
+      "head_to_head": 0.5,
+      "side_preference": 0.52
+    },
+    "event_id": "1465567",
+    "timestamp": "2026-04-28T16:57:43.465715",
     "verified": false,
     "actual_winner": null,
     "correct": null

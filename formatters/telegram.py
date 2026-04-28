@@ -142,6 +142,173 @@ def format_lol_match(prediction: Prediction) -> str:
     return "\n".join(lines)
 
 
+def _get_best_bets(
+    football_predictions: list,
+    nba_predictions: list,
+    lol_predictions: list,
+) -> list:
+    """
+    Analiza TODOS los mercados de todos los deportes y selecciona
+    las 1-2 apuestas con mayor confianza del día.
+    
+    Returns:
+        Lista de dicts: [{sport, match, market, recommendation, confidence, detail}]
+    """
+    candidates = []
+
+    # ---- Fútbol: analizar todos los mercados ----
+    for match_data, league in football_predictions:
+        pred = match_data["prediction"]
+        markets = match_data["markets"]
+        match_label = f"{pred.home_team} vs {pred.away_team}"
+
+        # Ganador 1X2
+        candidates.append({
+            "sport": "⚽",
+            "league": league,
+            "match": match_label,
+            "market": "Ganador",
+            "recommendation": pred.predicted_winner,
+            "confidence": pred.confidence,
+            "detail": f"Confianza {pred.confidence}%",
+        })
+
+        # Over/Under
+        ou = markets.get("over_under", {})
+        if ou and ou.get("confidence", 0) >= 55:
+            candidates.append({
+                "sport": "⚽",
+                "league": league,
+                "match": match_label,
+                "market": "Goles",
+                "recommendation": ou["recommendation"],
+                "confidence": ou["confidence"],
+                "detail": ou.get("detail", ""),
+            })
+
+        # BTTS
+        btts = markets.get("btts", {})
+        if btts and btts.get("confidence", 0) >= 60:
+            candidates.append({
+                "sport": "⚽",
+                "league": league,
+                "match": match_label,
+                "market": "Ambos Anotan",
+                "recommendation": btts["recommendation"],
+                "confidence": btts["confidence"],
+                "detail": btts.get("detail", ""),
+            })
+
+        # Córners
+        corners = markets.get("corners", {})
+        if corners and corners.get("confidence", 0) >= 60:
+            candidates.append({
+                "sport": "⚽",
+                "league": league,
+                "match": match_label,
+                "market": "Córners",
+                "recommendation": corners["recommendation"],
+                "confidence": corners["confidence"],
+                "detail": corners.get("detail", ""),
+            })
+
+    # ---- NBA: analizar mercados ----
+    for match_data in nba_predictions:
+        pred = match_data["prediction"]
+        markets = match_data["markets"]
+        match_label = f"{pred.home_team} vs {pred.away_team}"
+
+        # Ganador
+        candidates.append({
+            "sport": "🏀",
+            "league": "NBA",
+            "match": match_label,
+            "market": "Ganador",
+            "recommendation": pred.predicted_winner,
+            "confidence": pred.confidence,
+            "detail": f"Confianza {pred.confidence}%",
+        })
+
+        # Over/Under
+        ou = markets.get("over_under", {})
+        if ou and ou.get("confidence", 0) >= 55:
+            candidates.append({
+                "sport": "🏀",
+                "league": "NBA",
+                "match": match_label,
+                "market": "Puntos",
+                "recommendation": ou["recommendation"],
+                "confidence": ou["confidence"],
+                "detail": f"Proy: {ou.get('projected_total', '?')} pts",
+            })
+
+        # Handicap/Spread
+        hc = markets.get("handicap", {})
+        if hc and hc.get("confidence", 0) >= 60:
+            candidates.append({
+                "sport": "🏀",
+                "league": "NBA",
+                "match": match_label,
+                "market": "Spread",
+                "recommendation": hc["recommendation"],
+                "confidence": hc["confidence"],
+                "detail": hc.get("detail", ""),
+            })
+
+    # ---- LoL: solo ganador ----
+    for pred, league in lol_predictions:
+        match_label = f"{pred.home_team} vs {pred.away_team}"
+        candidates.append({
+            "sport": "🎮",
+            "league": league,
+            "match": match_label,
+            "market": "Ganador",
+            "recommendation": pred.predicted_winner,
+            "confidence": pred.confidence,
+            "detail": f"Confianza {pred.confidence}%",
+        })
+
+    # Ordenar por confianza descendente
+    candidates.sort(key=lambda x: x["confidence"], reverse=True)
+
+    # Seleccionar máximo 2, pero solo si tienen >= 60% confianza
+    best = [c for c in candidates if c["confidence"] >= 60][:2]
+
+    # Si no hay ninguno con 60%+, tomar el mejor que haya
+    if not best and candidates:
+        best = [candidates[0]]
+
+    return best
+
+
+def _format_best_bets(best_bets: list) -> str:
+    """Formatea la sección de mejores apuestas del día."""
+    if not best_bets:
+        return ""
+
+    lines = [
+        "🔥🔥🔥 *APUESTAS DEL DÍA* 🔥🔥🔥",
+        "━━━━━━━━━━━━━━━━━━━━",
+        "_Las apuestas con mayor probabilidad:_",
+        "",
+    ]
+
+    for i, bet in enumerate(best_bets, 1):
+        medal = "🥇" if i == 1 else "🥈"
+        lines.append(f"{medal} *PICK #{i}*")
+        lines.append(f"   {bet['sport']} {bet['match']}")
+        lines.append(f"   📌 *{bet['market']}:* {bet['recommendation']}")
+        lines.append(f"   🎯 Confianza: *{bet['confidence']}%* [{_confidence_bar(bet['confidence'])}]")
+        lines.append(f"   📋 {bet['detail']}")
+        lines.append(f"   🏆 _{bet['league']}_")
+        lines.append("")
+
+    lines.append("━━━━━━━━━━━━━━━━━━━━")
+    lines.append("")
+
+    return "\n".join(lines)
+
+
 def format_daily_predictions(
     football_predictions: list,
     nba_predictions: list,
@@ -150,6 +317,7 @@ def format_daily_predictions(
 ) -> str:
     """
     Formatea todos los pronósticos del día en un solo mensaje.
+    Incluye sección de APUESTAS DEL DÍA al inicio.
     
     Args:
         football_predictions: Lista de (match_data_dict, league_name)
@@ -166,6 +334,14 @@ def format_daily_predictions(
         f"🗓️ Partidos de {day_label}",
         "",
     ]
+
+    # ---- APUESTAS DEL DÍA (al inicio) ----
+    has_any = football_predictions or nba_predictions or lol_predictions
+    if has_any:
+        best_bets = _get_best_bets(football_predictions, nba_predictions, lol_predictions)
+        best_bets_text = _format_best_bets(best_bets)
+        if best_bets_text:
+            lines.append(best_bets_text)
 
     # ---- FÚTBOL ----
     if football_predictions:

@@ -60,6 +60,176 @@
     "correct": null
   },
   {
+    "sport": "nba",
+    "league": "NBA",
+    "home_team": "New York Knicks",
+    "away_team": "Atlanta Hawks",
+    "predicted_winner": "New York Knicks",
+    "confidence": 52.0,
+    "factors": {},
+    "factor_scores": {
+      "record": 0.5,
+      "recent_form": 0.5,
+      "head_to_head": 0.5,
+      "points_avg": 0.5
+    },
+    "event_id": "2467678",
+    "timestamp": "2026-04-28T16:23:35.447399",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "nba",
+    "league": "NBA",
+    "home_team": "San Antonio Spurs",
+    "away_team": "Portland Trail Blazers",
+    "predicted_winner": "San Antonio Spurs",
+    "confidence": 52.0,
+    "factors": {},
+    "factor_scores": {
+      "record": 0.5,
+      "recent_form": 0.5,
+      "head_to_head": 0.5,
+      "points_avg": 0.5
+    },
+    "event_id": "2467679",
+    "timestamp": "2026-04-28T16:23:35.455721",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "nba",
+    "league": "NBA",
+    "home_team": "Detroit Pistons",
+    "away_team": "Orlando Magic",
+    "predicted_winner": "Detroit Pistons",
+    "confidence": 52.0,
+    "factors": {},
+    "factor_scores": {
+      "record": 0.5,
+      "recent_form": 0.5,
+      "head_to_head": 0.5,
+      "points_avg": 0.5
+    },
+    "event_id": "2467960",
+    "timestamp": "2026-04-28T16:23:35.464017",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "lol",
+    "league": "LJL",
+    "home_team": "Uwinks",
+    "away_team": "DetonatioN FocusMe Academy",
+    "predicted_winner": "Uwinks",
+    "confidence": 52.0,
+    "factors": {
+      "side_preference": "🔵 Uwinks blue side (52% avg)"
+    },
+    "factor_scores": {
+      "win_rate": 0.5,
+      "tournament_position": 0.5,
+      "head_to_head": 0.5,
+      "side_preference": 0.52
+    },
+    "event_id": "1465566",
+    "timestamp": "2026-04-28T16:23:35.474706",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "lol",
+    "league": "LCK",
+    "home_team": "Nongshim Red Force",
+    "away_team": "T1",
+    "predicted_winner": "Nongshim Red Force",
+    "confidence": 52.0,
+    "factors": {
+      "side_preference": "🔵 Nongshim Red Force blue side (52% avg)"
+    },
+    "factor_scores": {
+      "win_rate": 0.5,
+      "tournament_position": 0.5,
+      "head_to_head": 0.5,
+      "side_preference": 0.52
+    },
+    "event_id": "1413460",
+    "timestamp": "2026-04-28T16:23:35.484019",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "lol",
+    "league": "LPL",
+    "home_team": "Ninjas in Pyjamas",
+    "away_team": "JD Gaming",
+    "predicted_winner": "Ninjas in Pyjamas",
+    "confidence": 52.0,
+    "factors": {
+      "side_preference": "🔵 Ninjas in Pyjamas blue side (52% avg)"
+    },
+    "factor_scores": {
+      "win_rate": 0.5,
+      "tournament_position": 0.5,
+      "head_to_head": 0.5,
+      "side_preference": 0.52
+    },
+    "event_id": "1420926",
+    "timestamp": "2026-04-28T16:23:35.494359",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "lol",
+    "league": "LCK",
+    "home_team": "KT Rolster",
+    "away_team": "Hanwha Life Esports",
+    "predicted_winner": "KT Rolster",
+    "confidence": 52.0,
+    "factors": {
+      "side_preference": "🔵 KT Rolster blue side (52% avg)"
+    },
+    "factor_scores": {
+      "win_rate": 0.5,
+      "tournament_position": 0.5,
+      "head_to_head": 0.5,
+      "side_preference": 0.52
+    },
+    "event_id": "1413461",
+    "timestamp": "2026-04-28T16:23:35.503683",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "lol",
+    "league": "LJL",
+    "home_team": "L Guide Gaming",
+    "away_team": "Rising Gaming",
+    "predicted_winner": "L Guide Gaming",
+    "confidence": 52.0,
+    "factors": {
+      "side_preference": "🔵 L Guide Gaming blue side (52% avg)"
+    },
+    "factor_scores": {
+      "win_rate": 0.5,
+      "tournament_position": 0.5,
+      "head_to_head": 0.5,
+      "side_preference": 0.52
+    },
+    "event_id": "1465567",
+    "timestamp": "2026-04-28T16:23:35.512481",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
     "sport": "football",
     "league": "Champions League",
     "home_team": "Paris SG",
@@ -77,7 +247,7 @@
       "goals_form": 0.5
     },
     "event_id": "2466172",
-    "timestamp": "2026-04-28T16:07:02.690507",
+    "timestamp": "2026-04-28T16:24:41.662270",
     "verified": false,
     "actual_winner": null,
     "correct": null
@@ -100,177 +270,7 @@
       "goals_form": 0.5
     },
     "event_id": "2466173",
-    "timestamp": "2026-04-28T16:07:02.692719",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "nba",
-    "league": "NBA",
-    "home_team": "New York Knicks",
-    "away_team": "Atlanta Hawks",
-    "predicted_winner": "New York Knicks",
-    "confidence": 52.0,
-    "factors": {},
-    "factor_scores": {
-      "record": 0.5,
-      "recent_form": 0.5,
-      "head_to_head": 0.5,
-      "points_avg": 0.5
-    },
-    "event_id": "2467678",
-    "timestamp": "2026-04-28T16:07:17.397016",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "nba",
-    "league": "NBA",
-    "home_team": "San Antonio Spurs",
-    "away_team": "Portland Trail Blazers",
-    "predicted_winner": "San Antonio Spurs",
-    "confidence": 52.0,
-    "factors": {},
-    "factor_scores": {
-      "record": 0.5,
-      "recent_form": 0.5,
-      "head_to_head": 0.5,
-      "points_avg": 0.5
-    },
-    "event_id": "2467679",
-    "timestamp": "2026-04-28T16:07:17.404084",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "nba",
-    "league": "NBA",
-    "home_team": "Detroit Pistons",
-    "away_team": "Orlando Magic",
-    "predicted_winner": "Detroit Pistons",
-    "confidence": 52.0,
-    "factors": {},
-    "factor_scores": {
-      "record": 0.5,
-      "recent_form": 0.5,
-      "head_to_head": 0.5,
-      "points_avg": 0.5
-    },
-    "event_id": "2467960",
-    "timestamp": "2026-04-28T16:07:17.410322",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "lol",
-    "league": "LJL",
-    "home_team": "Uwinks",
-    "away_team": "DetonatioN FocusMe Academy",
-    "predicted_winner": "Uwinks",
-    "confidence": 52.0,
-    "factors": {
-      "side_preference": "🔵 Uwinks blue side (52% avg)"
-    },
-    "factor_scores": {
-      "win_rate": 0.5,
-      "tournament_position": 0.5,
-      "head_to_head": 0.5,
-      "side_preference": 0.52
-    },
-    "event_id": "1465566",
-    "timestamp": "2026-04-28T16:07:23.847855",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "lol",
-    "league": "LCK",
-    "home_team": "Nongshim Red Force",
-    "away_team": "T1",
-    "predicted_winner": "Nongshim Red Force",
-    "confidence": 52.0,
-    "factors": {
-      "side_preference": "🔵 Nongshim Red Force blue side (52% avg)"
-    },
-    "factor_scores": {
-      "win_rate": 0.5,
-      "tournament_position": 0.5,
-      "head_to_head": 0.5,
-      "side_preference": 0.52
-    },
-    "event_id": "1413460",
-    "timestamp": "2026-04-28T16:07:23.863380",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "lol",
-    "league": "LPL",
-    "home_team": "Ninjas in Pyjamas",
-    "away_team": "JD Gaming",
-    "predicted_winner": "Ninjas in Pyjamas",
-    "confidence": 52.0,
-    "factors": {
-      "side_preference": "🔵 Ninjas in Pyjamas blue side (52% avg)"
-    },
-    "factor_scores": {
-      "win_rate": 0.5,
-      "tournament_position": 0.5,
-      "head_to_head": 0.5,
-      "side_preference": 0.52
-    },
-    "event_id": "1420926",
-    "timestamp": "2026-04-28T16:07:23.871512",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "lol",
-    "league": "LCK",
-    "home_team": "KT Rolster",
-    "away_team": "Hanwha Life Esports",
-    "predicted_winner": "KT Rolster",
-    "confidence": 52.0,
-    "factors": {
-      "side_preference": "🔵 KT Rolster blue side (52% avg)"
-    },
-    "factor_scores": {
-      "win_rate": 0.5,
-      "tournament_position": 0.5,
-      "head_to_head": 0.5,
-      "side_preference": 0.52
-    },
-    "event_id": "1413461",
-    "timestamp": "2026-04-28T16:07:23.879882",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "lol",
-    "league": "LJL",
-    "home_team": "L Guide Gaming",
-    "away_team": "Rising Gaming",
-    "predicted_winner": "L Guide Gaming",
-    "confidence": 52.0,
-    "factors": {
-      "side_preference": "🔵 L Guide Gaming blue side (52% avg)"
-    },
-    "factor_scores": {
-      "win_rate": 0.5,
-      "tournament_position": 0.5,
-      "head_to_head": 0.5,
-      "side_preference": 0.52
-    },
-    "event_id": "1465567",
-    "timestamp": "2026-04-28T16:07:23.888652",
+    "timestamp": "2026-04-28T16:24:41.664890",
     "verified": false,
     "actual_winner": null,
     "correct": null

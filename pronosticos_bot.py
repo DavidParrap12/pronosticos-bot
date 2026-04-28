@@ -165,7 +165,7 @@ def generate_football_predictions() -> list:
 
     # ---- Torneos CONMEBOL (Libertadores + Sudamericana) ----
     try:
-        conmebol_matches = conmebol.get_conmebol_matches_today(today)
+        conmebol_matches = conmebol.get_conmebol_matches_today()
         if conmebol_matches:
             logger.info(f"⚽ CONMEBOL: {len(conmebol_matches)} partidos encontrados")
 

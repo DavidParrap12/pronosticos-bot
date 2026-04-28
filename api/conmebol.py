@@ -1,212 +1,180 @@
 """
-Cliente para API-Football (RapidAPI) — Torneos CONMEBOL.
-Cubre Copa Libertadores y Copa Sudamericana.
-Tier gratuito: 100 requests/día.
-
-Para activar:
-1. Ve a https://rapidapi.com/api-sports/api/api-football/pricing
-2. Suscríbete al plan BASIC (gratis)
-3. Tu misma RapidAPI key funcionará automáticamente
+Cliente para torneos CONMEBOL (Libertadores y Sudamericana).
+Usa ESPN API — 100% gratuita, sin key, sin límites.
 """
 import requests
 import logging
 from datetime import datetime, timedelta
 
 from api import cache
-from config import RAPIDAPI_KEY
 
 logger = logging.getLogger(__name__)
 
-# API-Football en RapidAPI
-APIFOOTBALL_HOST = "api-football-v1.p.rapidapi.com"
-APIFOOTBALL_BASE = f"https://{APIFOOTBALL_HOST}/v3"
+# ESPN API endpoints (gratuitos, sin autenticación)
+ESPN_BASE = "https://site.api.espn.com/apis/site/v2/sports/soccer"
 
-# IDs de ligas en API-Football
-CONMEBOL_LEAGUES = {
-    "Copa Libertadores": 13,
-    "Copa Sudamericana": 11,
+CONMEBOL_TOURNAMENTS = {
+    "Copa Libertadores": "conmebol.libertadores",
+    "Copa Sudamericana": "conmebol.sudamericana",
 }
 
-# Temporada actual
-CONMEBOL_SEASON = 2026
 
-
-def _is_configured() -> bool:
-    """Verifica si API-Football está accesible."""
-    return bool(RAPIDAPI_KEY)
-
-
-def _get(endpoint: str, params: dict = None) -> dict:
-    """Petición a API-Football vía RapidAPI."""
-    headers = {
-        "x-rapidapi-key": RAPIDAPI_KEY,
-        "x-rapidapi-host": APIFOOTBALL_HOST,
-    }
-    url = f"{APIFOOTBALL_BASE}/{endpoint}"
-
+def _get_espn(slug: str, endpoint: str = "scoreboard") -> dict:
+    """Petición a ESPN API (gratuita, sin key)."""
+    url = f"{ESPN_BASE}/{slug}/{endpoint}"
     try:
-        r = requests.get(url, headers=headers, params=params, timeout=15)
-        if r.status_code == 403:
-            logger.warning(
-                "API-Football no suscrita. Suscríbete gratis en: "
-                "https://rapidapi.com/api-sports/api/api-football/pricing"
-            )
+        r = requests.get(url, timeout=15)
+        if r.status_code == 200:
+            return r.json()
+        else:
+            logger.debug(f"ESPN {r.status_code} para {slug}/{endpoint}")
             return {}
-        if r.status_code == 429:
-            logger.warning("API-Football: límite de requests alcanzado (100/día)")
-            return {}
-        r.raise_for_status()
-        return r.json()
-    except requests.RequestException as e:
-        logger.error(f"Error API-Football: {e}")
+    except Exception as e:
+        logger.error(f"Error ESPN: {e}")
         return {}
 
 
 def get_conmebol_matches_today(date_str: str = None) -> list:
     """
     Obtiene partidos de Libertadores y Sudamericana para hoy.
+    Usa ESPN API gratuita.
 
     Returns:
         Lista de dicts con info del partido
     """
-    if not _is_configured():
-        return []
-
     if date_str is None:
         date_str = datetime.now().strftime("%Y-%m-%d")
 
-    cache_params = {"date": date_str, "source": "conmebol_apifootball"}
+    cache_params = {"date": date_str, "source": "conmebol_espn"}
     cached = cache.get("conmebol_matches", cache_params, ttl=1800)
     if cached is not None:
         return cached
 
     matches = []
 
-    for league_name, league_id in CONMEBOL_LEAGUES.items():
-        data = _get("fixtures", {
-            "date": date_str,
-            "league": league_id,
-            "season": CONMEBOL_SEASON,
-        })
+    for tournament_name, slug in CONMEBOL_TOURNAMENTS.items():
+        try:
+            # ESPN scoreboard muestra los partidos del día actual
+            data = _get_espn(slug, "scoreboard")
+            events = data.get("events") or []
 
-        fixtures = data.get("response") or []
+            for event in events:
+                competitions = event.get("competitions") or [{}]
+                comp = competitions[0] if competitions else {}
+                competitors = comp.get("competitors") or []
 
-        # Si no encuentra con 2026, probar 2025
-        if not fixtures:
-            data = _get("fixtures", {
-                "date": date_str,
-                "league": league_id,
-                "season": CONMEBOL_SEASON - 1,
-            })
-            fixtures = data.get("response") or []
+                if len(competitors) < 2:
+                    continue
 
-        for fixture in fixtures:
-            teams = fixture.get("teams", {})
-            goals = fixture.get("goals", {})
-            info = fixture.get("fixture", {})
+                # En ESPN, el competitor con homeAway="home" es local
+                home_data = None
+                away_data = None
+                for c in competitors:
+                    if c.get("homeAway") == "home":
+                        home_data = c
+                    else:
+                        away_data = c
 
-            matches.append({
-                "league_name": league_name,
-                "league_id": f"apif_{league_id}",
-                "home_team": teams.get("home", {}).get("name", "?"),
-                "away_team": teams.get("away", {}).get("name", "?"),
-                "home_team_id": teams.get("home", {}).get("id"),
-                "away_team_id": teams.get("away", {}).get("id"),
-                "event_id": f"apif_{info.get('id', '')}",
-                "home_score": goals.get("home"),
-                "away_score": goals.get("away"),
-                "status": info.get("status", {}).get("long", "Not Started"),
-                "start_time": info.get("date", ""),
-                "venue": info.get("venue", {}).get("name", ""),
-                "source": "api-football",
-            })
+                if not home_data or not away_data:
+                    home_data = competitors[0]
+                    away_data = competitors[1]
 
-        if fixtures:
-            logger.info(f"⚽ {league_name}: {len(fixtures)} partidos encontrados")
+                home_team = home_data.get("team", {})
+                away_team = away_data.get("team", {})
+
+                status_info = event.get("status", {})
+                status_type = status_info.get("type", {})
+
+                match_info = {
+                    "league_name": tournament_name,
+                    "league_id": f"espn_{slug}",
+                    "home_team": home_team.get("displayName", home_team.get("name", "?")),
+                    "away_team": away_team.get("displayName", away_team.get("name", "?")),
+                    "home_team_id": home_team.get("id", ""),
+                    "away_team_id": away_team.get("id", ""),
+                    "event_id": f"espn_{event.get('id', '')}",
+                    "home_score": home_data.get("score", "0"),
+                    "away_score": away_data.get("score", "0"),
+                    "status": status_type.get("description", "Scheduled"),
+                    "status_state": status_type.get("state", "pre"),
+                    "start_time": event.get("date", ""),
+                    "venue": comp.get("venue", {}).get("fullName", ""),
+                    "source": "espn",
+                }
+                matches.append(match_info)
+
+            if events:
+                logger.info(f"⚽ {tournament_name}: {len(events)} partidos encontrados (ESPN)")
+
+        except Exception as e:
+            logger.error(f"Error obteniendo {tournament_name} de ESPN: {e}")
 
     cache.set("conmebol_matches", cache_params, matches)
     return matches
 
 
-def get_conmebol_past_results(league_id: int = None) -> list:
+def get_conmebol_past_results(tournament: str = None) -> list:
     """
-    Obtiene resultados pasados de Libertadores/Sudamericana
-    para alimentar al predictor.
+    Obtiene resultados pasados recientes de Libertadores/Sudamericana.
+    Usa ESPN API para obtener resultados.
 
     Returns:
-        Lista en formato compatible con TheSportsDB (strHomeTeam, intHomeScore, etc.)
+        Lista en formato compatible con TheSportsDB
     """
-    cache_params = {"source": "conmebol_past_apifootball", "league": league_id or "all"}
+    cache_params = {"source": "conmebol_past_espn", "tournament": tournament or "all"}
     cached = cache.get("conmebol_past", cache_params, ttl=3600)
     if cached is not None:
         return cached
 
     results = []
-    leagues_to_check = {league_id: ""} if league_id else CONMEBOL_LEAGUES
 
-    for name, lid in (CONMEBOL_LEAGUES.items() if not league_id else [(f"League {league_id}", league_id)]):
-        real_id = lid if isinstance(lid, int) else CONMEBOL_LEAGUES.get(name, 13)
+    tournaments = (
+        {tournament: CONMEBOL_TOURNAMENTS[tournament]}
+        if tournament and tournament in CONMEBOL_TOURNAMENTS
+        else CONMEBOL_TOURNAMENTS
+    )
 
-        # Últimos 15 partidos finalizados
-        data = _get("fixtures", {
-            "league": real_id,
-            "season": CONMEBOL_SEASON,
-            "status": "FT",
-            "last": 15,
-        })
+    for name, slug in tournaments.items():
+        try:
+            # Buscar resultados recientes
+            data = _get_espn(slug, "scoreboard")
+            events = data.get("events") or []
 
-        fixtures = data.get("response") or []
+            for event in events:
+                status_state = event.get("status", {}).get("type", {}).get("state", "")
+                if status_state != "post":
+                    continue  # Solo partidos terminados
 
-        # Fallback a temporada anterior
-        if not fixtures:
-            data = _get("fixtures", {
-                "league": real_id,
-                "season": CONMEBOL_SEASON - 1,
-                "status": "FT",
-                "last": 15,
-            })
-            fixtures = data.get("response") or []
+                competitions = event.get("competitions") or [{}]
+                comp = competitions[0] if competitions else {}
+                competitors = comp.get("competitors") or []
 
-        for fixture in fixtures:
-            teams = fixture.get("teams", {})
-            goals = fixture.get("goals", {})
-            info = fixture.get("fixture", {})
+                if len(competitors) < 2:
+                    continue
 
-            results.append({
-                "strHomeTeam": teams.get("home", {}).get("name", "?"),
-                "strAwayTeam": teams.get("away", {}).get("name", "?"),
-                "intHomeScore": str(goals.get("home", 0)),
-                "intAwayScore": str(goals.get("away", 0)),
-                "strLeague": name,
-                "idEvent": f"apif_{info.get('id', '')}",
-                "dateEvent": info.get("date", ""),
-            })
+                home = None
+                away = None
+                for c in competitors:
+                    if c.get("homeAway") == "home":
+                        home = c
+                    else:
+                        away = c
+
+                if not home or not away:
+                    home = competitors[0]
+                    away = competitors[1]
+
+                results.append({
+                    "strHomeTeam": home.get("team", {}).get("displayName", "?"),
+                    "strAwayTeam": away.get("team", {}).get("displayName", "?"),
+                    "intHomeScore": str(home.get("score", 0)),
+                    "intAwayScore": str(away.get("score", 0)),
+                    "strLeague": name,
+                    "idEvent": f"espn_{event.get('id', '')}",
+                })
+
+        except Exception as e:
+            logger.error(f"Error obteniendo resultados {name}: {e}")
 
     cache.set("conmebol_past", cache_params, results)
     return results
-
-
-def get_team_stats(team_id: int, league_id: int = 13) -> dict:
-    """
-    Obtiene estadísticas de un equipo en un torneo.
-
-    Returns:
-        Dict con stats del equipo
-    """
-    if not team_id:
-        return {}
-
-    cache_params = {"team": team_id, "league": league_id}
-    cached = cache.get("conmebol_team_stats", cache_params, ttl=86400)
-    if cached is not None:
-        return cached
-
-    data = _get("teams/statistics", {
-        "team": team_id,
-        "league": league_id,
-        "season": CONMEBOL_SEASON,
-    })
-
-    stats = data.get("response") or {}
-    cache.set("conmebol_team_stats", cache_params, stats)
-    return stats

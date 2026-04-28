@@ -1,0 +1,19 @@
+# Cache temporal
+data/cache/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Entorno virtual
+venv/
+.env
+
+# Test scripts
+test_api.py
+explora.py
+
+# IDE
+.vscode/
+.idea/

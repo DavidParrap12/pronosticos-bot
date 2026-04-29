@@ -1,678 +1,482 @@
 """
-🏆 Bot de Pronósticos Deportivos — Telegram
-Envía pronósticos diarios de Fútbol, NBA y LoL con auto-aprendizaje.
+pronosticos_bot.py — VERSIÓN CON IA COMPLETA
 
-Uso: python pronosticos_bot.py
+Bot de Telegram con:
+  ✅ Groq Llama 3.1 70B (gratis)
+  ✅ Fútbol multi-mercado
+  ✅ NBA multi-mercado
+  ✅ LoL, CS2, Valorant, Dota 2
+  ✅ Libertadores + Sudamericana con altitud
+  ✅ Auto-aprendizaje adaptativo
+  ✅ Nuevos comandos /cs2 /valorant
 """
 import logging
-import asyncio
-from datetime import datetime, time, timedelta
+from datetime import datetime, timedelta, timezone
 
-from telegram import Update, Bot
-from telegram.ext import (
-    Application,
-    CommandHandler,
-    ContextTypes,
-)
+from telegram import Update
+from telegram.ext import Application, CommandHandler, ContextTypes
 
 from config import (
-    TELEGRAM_TOKEN,
-    CHAT_ID,
-    FOOTBALL_LEAGUES,
-    NBA_LEAGUE,
-    SCHEDULE_HOUR,
-    SCHEDULE_MINUTE,
-    TIMEZONE,
+    TELEGRAM_TOKEN, CHAT_ID,
+    FOOTBALL_LEAGUES, NBA_LEAGUE,
+    SCHEDULE_HOUR, SCHEDULE_MINUTE, TIMEZONE,
 )
-
 from api import thesportsdb, pandascore, conmebol
-from predictor import futbol, nba, lol
+from predictor import futbol_con_ai as futbol    # ← usa la versión con IA
+from predictor import nba_con_ai as nba          # ← usa la versión con IA
+from predictor import esports_con_ai as esports  # ← nuevo módulo unificado
+
 from predictor.engine import (
-    get_accuracy_stats,
-    get_unverified_predictions,
-    verify_prediction,
-    get_current_weights,
+    get_accuracy_stats, get_unverified_predictions,
+    verify_prediction, get_current_weights,
 )
 from formatters.telegram import (
-    format_daily_predictions,
-    format_stats_message,
+    format_daily_predictions, format_stats_message,
     format_welcome_message,
 )
 
-# ============================================================
-# Logging
-# ============================================================
 logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    format="%(asctime)s — %(name)s — %(levelname)s — %(message)s",
     level=logging.INFO,
 )
 logger = logging.getLogger(__name__)
 
 
-# ============================================================
-# Utilidades de zona horaria
-# ============================================================
+# ──────────────────────────────────────────────────────────────
+#  ALTITUDES CONMEBOL (factor clave para el análisis IA)
+# ──────────────────────────────────────────────────────────────
 
-def _get_event_dates() -> list:
-    """
-    Retorna las fechas UTC a consultar para encontrar partidos de hoy.
-    TheSportsDB usa fechas UTC. Un partido a las 7pm Colombia (UTC-5)
-    se registra como el día siguiente en UTC (00:00 UTC).
-    Por eso consultamos hoy Y mañana en UTC.
-    """
-    import pytz
-    tz = pytz.timezone(TIMEZONE)
-    now_local = datetime.now(tz)
-    today_local = now_local.strftime("%Y-%m-%d")
-    
-    # En UTC, "hoy" puede ser hoy o mañana
-    from datetime import timezone
-    now_utc = datetime.now(timezone.utc)
-    today_utc = now_utc.strftime("%Y-%m-%d")
-    tomorrow_utc = (now_utc + timedelta(days=1)).strftime("%Y-%m-%d")
-    
-    # Siempre consultar ambas fechas para no perder partidos
-    dates = [today_utc]
-    if tomorrow_utc != today_utc:
-        dates.append(tomorrow_utc)
-    
-    return dates
+ALTITUDES = {
+    # Colombia
+    "Deportes Tolima": 1285,
+    "Millonarios": 2640,
+    "Santa Fe": 2640,
+    "América de Cali": 995,
+    "Atlético Nacional": 1495,
+    "Independiente Medellín": 1495,
+    "Junior": 18,
+    "Deportivo Cali": 995,
+    "Peñarol": 43,   # Montevideo
+    # Bolivia — Extremo
+    "Bolívar": 3637,
+    "The Strongest": 3637,
+    "Always Ready": 3637,
+    # Ecuador
+    "Liga de Quito": 2850,
+    "Independiente del Valle": 2400,
+    "Barcelona SC": 4,
+    "Emelec": 4,
+    # Perú
+    "Universitario": 154,
+    "Sporting Cristal": 154,
+    "Cienciano": 3399,
+    "Alianza Lima": 154,
+    # Argentina/Brasil/Uruguay — nivel del mar aprox
+    "Boca Juniors": 25,
+    "River Plate": 25,
+    "Flamengo": 10,
+    "Fluminense": 10,
+    "Palmeiras": 760,
+    "Atlético Mineiro": 858,
+    "Cruzeiro": 858,
+    "Santos": 3,
+    "São Paulo": 760,
+    # Chile
+    "Colo-Colo": 520,
+    "Universidad de Chile": 520,
+    "O'Higgins": 172,
+    "Coquimbo Unido": 28,
+}
 
 
-def _is_upcoming_event(event: dict) -> bool:
-    """
-    Verifica si un evento aún no ha terminado.
-    Filtra los que ya tienen resultado final (FT).
-    """
+# ──────────────────────────────────────────────────────────────
+#  UTILIDADES DE FECHA/HORA
+# ──────────────────────────────────────────────────────────────
+
+def _get_dates() -> list:
+    """Fechas UTC a consultar (hoy + mañana) para cubrir COL GMT-5."""
+    now  = datetime.now(timezone.utc)
+    return [
+        now.strftime("%Y-%m-%d"),
+        (now + timedelta(days=1)).strftime("%Y-%m-%d"),
+    ]
+
+
+def _is_upcoming(event: dict) -> bool:
+    """Filtra partidos ya terminados."""
     status = (event.get("strStatus") or "").upper()
-    # FT = Full Time, AET = After Extra Time, PEN = Penalties, AOT = After OT
-    finished_statuses = {"FT", "AET", "PEN", "AOT", "ABD", "CANC", "PST", "AWD", "WO"}
-    
-    if status in finished_statuses:
-        return False
-    
-    # Si tiene score final, está terminado
-    home_score = event.get("intHomeScore")
-    away_score = event.get("intAwayScore")
-    if home_score is not None and away_score is not None:
-        try:
-            int(home_score)
-            int(away_score)
-            if status == "FT" or status == "":
-                # Tiene score pero sin status claro — verificar por hora
-                return False
-        except (ValueError, TypeError):
-            pass
-    
-    return True
+    finished = {"FT", "AET", "PEN", "AOT", "ABD", "CANC", "PST", "AWD", "WO"}
+    return status not in finished
 
 
-# ============================================================
-# Generadores de Pronósticos
-# ============================================================
+# ──────────────────────────────────────────────────────────────
+#  GENERADORES DE PRONÓSTICOS
+# ──────────────────────────────────────────────────────────────
 
-def generate_football_predictions() -> list:
-    """
-    Genera pronósticos multi-mercado para todos los partidos de fútbol del día.
-    Incluye ligas de TheSportsDB + torneos CONMEBOL de API-Football.
-    Consulta hoy + mañana UTC para cubrir zona horaria Colombia.
-    
-    Returns:
-        Lista de (match_data_dict, league_name) tuples
-        match_data_dict = {"prediction": Prediction, "markets": {...}}
-    """
+def generate_football() -> list:
+    """Genera pronósticos de fútbol para todas las ligas + CONMEBOL."""
     predictions = []
-    dates = _get_event_dates()
-    seen_events = set()  # Evitar duplicados
+    dates = _get_dates()
 
-    # ---- Ligas de TheSportsDB ----
+    # Ligas de TheSportsDB
     for league_name, league_id in FOOTBALL_LEAGUES.items():
         try:
-            all_events = []
+            events = []
             for date in dates:
-                evts = thesportsdb.get_events_by_league_date(league_id, date)
-                all_events.extend(evts)
-
-            # Filtrar solo partidos que NO han terminado
-            events = [e for e in all_events if _is_upcoming_event(e)]
-
-            if not events:
-                logger.info(f"Sin partidos hoy en {league_name}")
-                continue
+                events.extend(thesportsdb.get_events_by_league_date(league_id, date))
+            events = [e for e in events if _is_upcoming(e)]
 
             for event in events:
-                home_team = event.get("strHomeTeam", "")
-                away_team = event.get("strAwayTeam", "")
-                event_id = str(event.get("idEvent", ""))
-
-                if not home_team or not away_team:
+                home = event.get("strHomeTeam", "")
+                away = event.get("strAwayTeam", "")
+                eid  = str(event.get("idEvent", ""))
+                if not home or not away:
                     continue
-
                 try:
-                    match_data = futbol.predict_match(
-                        home_team=home_team,
-                        away_team=away_team,
-                        league_name=league_name,
-                        league_id=league_id,
-                        event_id=event_id,
+                    md = futbol.predict_match(
+                        home_team=home, away_team=away,
+                        league_name=league_name, league_id=league_id,
+                        event_id=eid,
+                        altitude_m=ALTITUDES.get(home),
                     )
-                    predictions.append((match_data, league_name))
+                    predictions.append((md, league_name))
                 except Exception as e:
-                    logger.error(f"Error prediciendo {home_team} vs {away_team}: {e}")
-
+                    logger.error(f"Error {home} vs {away}: {e}")
         except Exception as e:
-            logger.error(f"Error obteniendo partidos de {league_name}: {e}")
+            logger.error(f"Error liga {league_name}: {e}")
 
-    # ---- Torneos CONMEBOL (Libertadores + Sudamericana) ----
+    # CONMEBOL (Libertadores + Sudamericana)
     try:
-        conmebol_matches = conmebol.get_conmebol_matches_today()
-        if conmebol_matches:
-            logger.info(f"⚽ CONMEBOL: {len(conmebol_matches)} partidos encontrados")
-
-        for match in conmebol_matches:
-            home_team = match.get("home_team", "")
-            away_team = match.get("away_team", "")
-            league_name = match.get("league_name", "CONMEBOL")
-            event_id = match.get("event_id", "")
-
-            if not home_team or not away_team:
+        for match in conmebol.get_conmebol_matches_today():
+            home  = match.get("home_team", "")
+            away  = match.get("away_team", "")
+            lname = match.get("league_name", "CONMEBOL")
+            eid   = match.get("event_id", "")
+            if not home or not away:
                 continue
-
-            # Obtener datos pasados de CONMEBOL para el predictor
-            past_results = conmebol.get_conmebol_past_results()
-
             try:
-                match_data = futbol.predict_match(
-                    home_team=home_team,
-                    away_team=away_team,
-                    league_name=league_name,
-                    league_id=0,  # Sin ID de TheSportsDB
-                    event_id=event_id,
+                md = futbol.predict_match(
+                    home_team=home, away_team=away,
+                    league_name=lname, league_id=0,
+                    event_id=eid,
+                    altitude_m=ALTITUDES.get(home),
                 )
-                predictions.append((match_data, league_name))
+                predictions.append((md, lname))
             except Exception as e:
-                logger.error(f"Error prediciendo CONMEBOL {home_team} vs {away_team}: {e}")
-
+                logger.error(f"Error CONMEBOL {home} vs {away}: {e}")
     except Exception as e:
-        logger.error(f"Error obteniendo partidos CONMEBOL: {e}")
+        logger.error(f"Error CONMEBOL: {e}")
 
     return predictions
 
 
-def generate_nba_predictions() -> list:
-    """
-    Genera pronósticos multi-mercado para todos los partidos de NBA del día.
-    Consulta hoy + mañana UTC para cubrir zona horaria Colombia.
-    
-    Returns:
-        Lista de match_data_dicts
-        match_data_dict = {"prediction": Prediction, "markets": {...}}
-    """
+def generate_nba() -> list:
+    """Genera pronósticos NBA."""
     predictions = []
-    dates = _get_event_dates()
+    dates = _get_dates()
 
     for league_name, league_id in NBA_LEAGUE.items():
         try:
-            all_events = []
+            events = []
             for date in dates:
-                evts = thesportsdb.get_events_by_league_date(league_id, date)
-                all_events.extend(evts)
-
-            # Filtrar solo partidos que NO han terminado
-            events = [e for e in all_events if _is_upcoming_event(e)]
-
-            if not events:
-                logger.info("Sin partidos NBA hoy")
-                continue
+                events.extend(thesportsdb.get_events_by_league_date(league_id, date))
+            events = [e for e in events if _is_upcoming(e)]
 
             for event in events:
-                home_team = event.get("strHomeTeam", "")
-                away_team = event.get("strAwayTeam", "")
-                event_id = str(event.get("idEvent", ""))
-
-                if not home_team or not away_team:
+                home = event.get("strHomeTeam", "")
+                away = event.get("strAwayTeam", "")
+                eid  = str(event.get("idEvent", ""))
+                if not home or not away:
                     continue
-
                 try:
-                    match_data = nba.predict_match(
-                        home_team=home_team,
-                        away_team=away_team,
-                        event_id=event_id,
-                    )
-                    predictions.append(match_data)
+                    md = nba.predict_match(home, away, event_id=eid)
+                    predictions.append(md)
                 except Exception as e:
-                    logger.error(f"Error prediciendo NBA {home_team} vs {away_team}: {e}")
-
+                    logger.error(f"Error NBA {home} vs {away}: {e}")
         except Exception as e:
-            logger.error(f"Error obteniendo partidos NBA: {e}")
+            logger.error(f"Error NBA: {e}")
 
     return predictions
 
 
-def generate_lol_predictions() -> list:
-    """
-    Genera pronósticos para partidos de LoL próximos.
-    
-    Returns:
-        Lista de (Prediction, league_name) tuples
-    """
-    predictions = []
-
-    try:
-        matches = lol.get_upcoming_matches()
-
-        if not matches:
-            logger.info("Sin partidos LoL próximos")
-            return predictions
-
-        # Tomar máximo 5 partidos para no saturar
-        for match in matches[:5]:
-            try:
-                prediction = lol.predict_match(
-                    team1_name=match["team1_name"],
-                    team2_name=match["team2_name"],
-                    league_name=match["league_name"],
-                    event_id=str(match["match_id"]),
-                )
-                predictions.append((prediction, match["league_name"]))
-            except Exception as e:
-                logger.error(f"Error prediciendo LoL {match['team1_name']} vs {match['team2_name']}: {e}")
-
-    except Exception as e:
-        logger.error(f"Error obteniendo partidos LoL: {e}")
-
-    return predictions
+def generate_esports(sport: str = "lol", limit: int = 5) -> list:
+    """Genera pronósticos para el esport indicado."""
+    return esports.get_all_upcoming(sport=sport, limit=limit)
 
 
-# ============================================================
-# Verificación de Resultados (Auto-aprendizaje)
-# ============================================================
+# ──────────────────────────────────────────────────────────────
+#  AUTO-APRENDIZAJE
+# ──────────────────────────────────────────────────────────────
 
-def verify_results():
-    """
-    Verifica resultados de predicciones anteriores.
-    Busca en las APIs si los partidos ya terminaron y compara.
-    """
+def verify_results() -> int:
+    """Verifica resultados y ajusta pesos automáticamente."""
     unverified = get_unverified_predictions()
-    verified_count = 0
+    count = 0
 
     for pred_data in unverified:
-        sport = pred_data.get("sport")
+        sport    = pred_data.get("sport")
         event_id = pred_data.get("event_id")
-
         if not event_id:
             continue
 
         try:
             if sport == "football":
-                # Buscar en resultados recientes de la liga
-                for league_name, league_id in FOOTBALL_LEAGUES.items():
-                    past = thesportsdb.get_past_events(league_id)
-                    for event in past:
-                        if str(event.get("idEvent")) == event_id:
-                            home_score = int(event.get("intHomeScore") or -1)
-                            away_score = int(event.get("intAwayScore") or -1)
-
-                            if home_score < 0 or away_score < 0:
-                                continue
-
-                            if home_score > away_score:
-                                actual_winner = event.get("strHomeTeam", "")
-                            elif away_score > home_score:
-                                actual_winner = event.get("strAwayTeam", "")
-                            else:
-                                actual_winner = "Empate"
-
-                            result = verify_prediction(event_id, actual_winner)
-                            if result is not None:
-                                verified_count += 1
-                                status = "✅" if result else "❌"
-                                logger.info(
-                                    f"{status} Verificado: {pred_data['home_team']} vs "
-                                    f"{pred_data['away_team']} → {actual_winner}"
-                                )
-                            break
+                for _, lid in FOOTBALL_LEAGUES.items():
+                    for ev in thesportsdb.get_past_events(lid):
+                        if str(ev.get("idEvent")) != event_id:
+                            continue
+                        hs, aws = int(ev.get("intHomeScore") or -1), int(ev.get("intAwayScore") or -1)
+                        if hs < 0: break
+                        winner = ev.get("strHomeTeam") if hs > aws else (
+                            ev.get("strAwayTeam") if aws > hs else "Empate"
+                        )
+                        ok = verify_prediction(event_id, winner)
+                        if ok is not None: count += 1
+                        break
 
             elif sport == "nba":
-                past = thesportsdb.get_past_events(4387)
-                for event in past:
-                    if str(event.get("idEvent")) == event_id:
-                        home_score = int(event.get("intHomeScore") or -1)
-                        away_score = int(event.get("intAwayScore") or -1)
-
-                        if home_score < 0 or away_score < 0:
-                            continue
-
-                        if home_score > away_score:
-                            actual_winner = event.get("strHomeTeam", "")
-                        else:
-                            actual_winner = event.get("strAwayTeam", "")
-
-                        result = verify_prediction(event_id, actual_winner)
-                        if result is not None:
-                            verified_count += 1
-                            status = "✅" if result else "❌"
-                            logger.info(
-                                f"{status} NBA Verificado: {pred_data['home_team']} vs "
-                                f"{pred_data['away_team']} → {actual_winner}"
-                            )
-                        break
+                for ev in thesportsdb.get_past_events(4387):
+                    if str(ev.get("idEvent")) != event_id: continue
+                    hs, aws = int(ev.get("intHomeScore") or -1), int(ev.get("intAwayScore") or -1)
+                    if hs < 0: break
+                    winner = ev.get("strHomeTeam") if hs > aws else ev.get("strAwayTeam")
+                    ok = verify_prediction(event_id, winner)
+                    if ok is not None: count += 1
+                    break
 
             elif sport == "lol":
-                past = pandascore.get_past_lol_matches(per_page=30)
-                for match in past:
-                    if str(match.get("id")) == event_id:
-                        winner = match.get("winner") or {}
-                        actual_winner = winner.get("name", "")
-
-                        if actual_winner:
-                            result = verify_prediction(event_id, actual_winner)
-                            if result is not None:
-                                verified_count += 1
-                                status = "✅" if result else "❌"
-                                logger.info(
-                                    f"{status} LoL Verificado: {pred_data['home_team']} vs "
-                                    f"{pred_data['away_team']} → {actual_winner}"
-                                )
-                        break
+                for match in pandascore.get_past_lol_matches(per_page=30):
+                    if str(match.get("id")) != event_id: continue
+                    winner = (match.get("winner") or {}).get("name", "")
+                    if winner:
+                        ok = verify_prediction(event_id, winner)
+                        if ok is not None: count += 1
+                    break
 
         except Exception as e:
             logger.error(f"Error verificando {event_id}: {e}")
 
-    if verified_count > 0:
-        logger.info(f"📊 Se verificaron {verified_count} predicciones y se ajustaron los pesos")
+    if count:
+        logger.info(f"✅ {count} predicciones verificadas, pesos actualizados")
+    return count
 
-    return verified_count
+
+# ──────────────────────────────────────────────────────────────
+#  COMANDOS TELEGRAM
+# ──────────────────────────────────────────────────────────────
+
+def _split(text: str, max_len: int = 3800) -> list:
+    lines = text.split("\n")
+    parts, cur, cur_len = [], [], 0
+    for line in lines:
+        if cur_len + len(line) + 1 > max_len:
+            parts.append("\n".join(cur))
+            cur, cur_len = [line], len(line)
+        else:
+            cur.append(line)
+            cur_len += len(line) + 1
+    if cur:
+        parts.append("\n".join(cur))
+    return parts
 
 
-# ============================================================
-# Comandos de Telegram
-# ============================================================
+async def _send(update_or_ctx, text: str, is_ctx: bool = False):
+    """Envía mensaje dividiéndolo si excede 4096 chars."""
+    send_fn = (
+        update_or_ctx.bot.send_message
+        if is_ctx else
+        update_or_ctx.message.reply_text
+    )
+    for part in _split(text):
+        kwargs = {"text": part, "parse_mode": "Markdown"}
+        if is_ctx:
+            kwargs["chat_id"] = CHAT_ID
+        await send_fn(**kwargs)
+
 
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Comando /start — Bienvenida."""
-    await update.message.reply_text(
-        format_welcome_message(),
-        parse_mode="MarkdownV2",
-    )
+    await update.message.reply_text(format_welcome_message(), parse_mode="MarkdownV2")
 
 
 async def cmd_pronosticos(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Comando /pronosticos — Todos los pronósticos del día."""
-    await update.message.reply_text("🔄 Generando pronósticos... dame unos segundos ⏳")
-
-    # Primero verificar resultados pendientes (auto-aprendizaje)
+    await update.message.reply_text("🤖 Generando pronósticos con IA... ⏳")
     verify_results()
-
-    # Generar pronósticos
-    football_preds = generate_football_predictions()
-    nba_preds = generate_nba_predictions()
-    lol_preds = generate_lol_predictions()
-
-    message = format_daily_predictions(football_preds, nba_preds, lol_preds)
-
-    # Telegram tiene límite de 4096 caracteres
-    if len(message) > 3800:
-        parts = _split_message(message, 3800)
-        for part in parts:
-            await update.message.reply_text(part, parse_mode="Markdown")
-    else:
-        await update.message.reply_text(message, parse_mode="Markdown")
+    football = generate_football()
+    nba_p    = generate_nba()
+    lol_p    = generate_esports("lol")
+    msg = format_daily_predictions(football, nba_p, lol_p)
+    await _send(update, msg)
 
 
 async def cmd_futbol(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Comando /futbol — Solo pronósticos de fútbol."""
-    await update.message.reply_text("⚽ Analizando partidos de fútbol...")
-
+    await update.message.reply_text("⚽ Analizando fútbol con IA...")
     verify_results()
-    football_preds = generate_football_predictions()
-
-    message = format_daily_predictions(football_preds, [], [])
-    if len(message) > 3800:
-        parts = _split_message(message, 3800)
-        for part in parts:
-            await update.message.reply_text(part, parse_mode="Markdown")
-    else:
-        await update.message.reply_text(message, parse_mode="Markdown")
+    msg = format_daily_predictions(generate_football(), [], [])
+    await _send(update, msg)
 
 
 async def cmd_nba(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Comando /nba — Solo pronósticos de NBA."""
-    await update.message.reply_text("🏀 Analizando partidos de NBA...")
-
+    await update.message.reply_text("🏀 Analizando NBA con IA...")
     verify_results()
-    nba_preds = generate_nba_predictions()
-
-    message = format_daily_predictions([], nba_preds, [])
-    if len(message) > 3800:
-        parts = _split_message(message, 3800)
-        for part in parts:
-            await update.message.reply_text(part, parse_mode="Markdown")
-    else:
-        await update.message.reply_text(message, parse_mode="Markdown")
+    msg = format_daily_predictions([], generate_nba(), [])
+    await _send(update, msg)
 
 
 async def cmd_lol(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Comando /lol — Solo pronósticos de LoL."""
-    await update.message.reply_text("🎮 Analizando partidos de League of Legends...")
-
+    await update.message.reply_text("🎮 Analizando LoL con IA...")
     verify_results()
-    lol_preds = generate_lol_predictions()
+    lol_p = generate_esports("lol")
+    msg = format_daily_predictions([], [], lol_p)
+    await _send(update, msg)
 
-    message = format_daily_predictions([], [], lol_preds)
-    if len(message) > 3800:
-        parts = _split_message(message, 3800)
-        for part in parts:
-            await update.message.reply_text(part, parse_mode="Markdown")
-    else:
-        await update.message.reply_text(message, parse_mode="Markdown")
+
+async def cmd_cs2(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("🔫 Analizando CS2 con IA...")
+    cs2_p = generate_esports("cs2")
+    msg = format_daily_predictions([], [], [], esport_predictions={"cs2": cs2_p})
+    await _send(update, msg)
+
+
+async def cmd_valorant(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("🌀 Analizando Valorant con IA...")
+    val_p = generate_esports("valorant")
+    msg = format_daily_predictions([], [], [], esport_predictions={"valorant": val_p})
+    await _send(update, msg)
+
+
+async def cmd_esports(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Todos los esports de una vez."""
+    await update.message.reply_text("🎮 Analizando todos los esports con IA...")
+    lol_p = generate_esports("lol")
+    cs2_p = generate_esports("cs2")
+    val_p = generate_esports("valorant")
+    msg = format_daily_predictions(
+        [], [], lol_p,
+        esport_predictions={"cs2": cs2_p, "valorant": val_p},
+    )
+    await _send(update, msg)
 
 
 async def cmd_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Comando /stats — Estadísticas de acierto."""
-    message = format_stats_message()
-    await update.message.reply_text(message, parse_mode="Markdown")
-
-
-async def cmd_pesos(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Comando /pesos — Ver pesos actuales del algoritmo."""
-    weights = get_current_weights()
-
-    lines = ["🧠 *PESOS ACTUALES DEL ALGORITMO*", ""]
-
-    weight_labels = {
-        "table_position": "📊 Tabla",
-        "recent_form": "🔥 Racha",
-        "home_advantage": "🏠 Local",
-        "head_to_head": "⚔️ H2H",
-        "goals_form": "⚽ Goles",
-        "record": "📊 Récord",
-        "points_avg": "🏀 Puntos",
-        "win_rate": "📊 WinRate",
-        "tournament_position": "🏆 Torneo",
-        "side_preference": "🔵 Side",
-    }
-
-    sport_names = {"football": "⚽ Fútbol", "nba": "🏀 NBA", "lol": "🎮 LoL"}
-
-    for sport, name in sport_names.items():
-        lines.append(f"*{name}:*")
-        w = weights.get(sport, {})
-        for factor, value in sorted(w.items(), key=lambda x: -x[1]):
-            label = weight_labels.get(factor, factor)
-            pct = round(value * 100)
-            bar = "▓" * (pct // 5) + "░" * (20 - pct // 5)
-            lines.append(f"  {label}: {bar} {pct}%")
-        lines.append("")
-
-    lines.append("_Los pesos se ajustan automáticamente_")
-    lines.append("_tras verificar cada resultado real_")
-
-    await update.message.reply_text("\n".join(lines), parse_mode="Markdown")
+    await update.message.reply_text(format_stats_message(), parse_mode="Markdown")
 
 
 async def cmd_verificar(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Comando /verificar — Fuerza verificación de resultados."""
-    await update.message.reply_text("🔍 Verificando resultados pendientes...")
-
+    await update.message.reply_text("🔍 Verificando resultados...")
     count = verify_results()
-
-    if count > 0:
+    if count:
+        stats   = get_accuracy_stats()
+        total_ok  = sum(s["monthly"]["correct"] for s in stats.values())
+        total_all = sum(s["monthly"]["total"]   for s in stats.values())
+        acc = round(total_ok / total_all * 100, 1) if total_all else 0
         await update.message.reply_text(
-            f"✅ Se verificaron *{count}* predicciones.\n"
-            f"Los pesos se han ajustado automáticamente.\n\n"
-            f"Usa /stats para ver tu precisión actualizada.",
+            f"✅ *{count}* predicciones verificadas\n"
+            f"📊 Precisión del mes: *{acc}%* ({total_ok}/{total_all})\n"
+            f"🧠 _Pesos del algoritmo actualizados_",
             parse_mode="Markdown",
         )
     else:
         await update.message.reply_text(
-            "ℹ️ No hay resultados nuevos para verificar.\n"
-            "Los partidos aún no han terminado o ya fueron verificados."
+            "ℹ️ Sin resultados nuevos para verificar.\n"
+            "Los partidos aún no han terminado o ya fueron procesados."
         )
 
 
-# ============================================================
-# Envío automático programado
-# ============================================================
+# ──────────────────────────────────────────────────────────────
+#  SCHEDULER (envíos automáticos)
+# ──────────────────────────────────────────────────────────────
 
-async def scheduled_predictions(context: ContextTypes.DEFAULT_TYPE):
-    """Envía pronósticos automáticamente cada mañana."""
-    logger.info("⏰ Envío automático de pronósticos")
-
-    # Verificar resultados de ayer
+async def scheduled_send(context: ContextTypes.DEFAULT_TYPE):
+    logger.info("⏰ Envío automático")
     verify_results()
-
-    # Generar pronósticos del día
-    football_preds = generate_football_predictions()
-    nba_preds = generate_nba_predictions()
-    lol_preds = generate_lol_predictions()
-
-    message = format_daily_predictions(football_preds, nba_preds, lol_preds)
-
-    if len(message) > 3800:
-        parts = _split_message(message, 3800)
-        for part in parts:
-            await context.bot.send_message(
-                chat_id=CHAT_ID,
-                text=part,
-                parse_mode="Markdown",
-            )
-    else:
-        await context.bot.send_message(
-            chat_id=CHAT_ID,
-            text=message,
-            parse_mode="Markdown",
-        )
+    football = generate_football()
+    nba_p    = generate_nba()
+    lol_p    = generate_esports("lol")
+    cs2_p    = generate_esports("cs2")
+    msg = format_daily_predictions(
+        football, nba_p, lol_p,
+        esport_predictions={"cs2": cs2_p},
+    )
+    await _send(context, msg, is_ctx=True)
 
 
 async def scheduled_verify(context: ContextTypes.DEFAULT_TYPE):
-    """Verifica resultados automáticamente por la noche."""
-    logger.info("🔍 Verificación automática de resultados")
+    logger.info("🔍 Verificación nocturna")
     count = verify_results()
-
-    if count > 0:
-        stats = get_accuracy_stats()
-        total_correct = sum(s["monthly"]["correct"] for s in stats.values())
-        total_preds = sum(s["monthly"]["total"] for s in stats.values())
-        accuracy = round(total_correct / total_preds * 100, 1) if total_preds > 0 else 0
-
+    if count:
+        stats   = get_accuracy_stats()
+        total_ok  = sum(s["monthly"]["correct"] for s in stats.values())
+        total_all = sum(s["monthly"]["total"]   for s in stats.values())
+        acc = round(total_ok / total_all * 100, 1) if total_all else 0
         await context.bot.send_message(
             chat_id=CHAT_ID,
             text=(
-                f"📊 *Resultados verificados*\n\n"
-                f"Se verificaron *{count}* predicciones\n"
-                f"Precisión del mes: *{accuracy}%* ({total_correct}/{total_preds})\n\n"
-                f"🧠 _Pesos del algoritmo actualizados_"
+                f"📊 *Verificación nocturna*\n\n"
+                f"✅ {count} predicciones verificadas\n"
+                f"🎯 Precisión del mes: *{acc}%*\n"
+                f"🧠 _Pesos actualizados automáticamente_"
             ),
             parse_mode="Markdown",
         )
 
 
-# ============================================================
-# Utilidades
-# ============================================================
-
-def _split_message(text: str, max_length: int) -> list:
-    """Divide un mensaje largo en partes."""
-    lines = text.split("\n")
-    parts = []
-    current = []
-    current_len = 0
-
-    for line in lines:
-        if current_len + len(line) + 1 > max_length:
-            parts.append("\n".join(current))
-            current = [line]
-            current_len = len(line)
-        else:
-            current.append(line)
-            current_len += len(line) + 1
-
-    if current:
-        parts.append("\n".join(current))
-
-    return parts
-
-
-# ============================================================
-# Main
-# ============================================================
+# ──────────────────────────────────────────────────────────────
+#  MAIN
+# ──────────────────────────────────────────────────────────────
 
 def main():
-    """Arranca el bot."""
-    print("=" * 50)
-    print("🏆 Bot de Pronósticos Deportivos")
-    print("=" * 50)
-    print(f"📱 Chat ID: {CHAT_ID}")
-    print(f"⏰ Envío automático: {SCHEDULE_HOUR}:{SCHEDULE_MINUTE:02d} ({TIMEZONE})")
-    print(f"⚽ Ligas fútbol: {', '.join(FOOTBALL_LEAGUES.keys())}")
-    print(f"🏀 NBA: Activo")
-    print(f"🎮 LoL: {'Activo' if pandascore._is_configured() else 'Desactivado (falta PANDASCORE_TOKEN)'}")
-    print("=" * 50)
-    print("Comandos: /pronosticos /futbol /nba /lol /stats /pesos /verificar")
-    print("=" * 50)
+    print("=" * 55)
+    print("🏆 Bot de Pronósticos con IA — Groq Llama 3.1 70B")
+    print("=" * 55)
+    print(f"📱 Chat ID:  {CHAT_ID}")
+    print(f"⏰ Envío:    {SCHEDULE_HOUR}:{SCHEDULE_MINUTE:02d} ({TIMEZONE})")
+    print(f"⚽ Fútbol:   {', '.join(FOOTBALL_LEAGUES.keys())} + CONMEBOL")
+    print(f"🏀 NBA:      Activo")
+    print(f"🎮 Esports: LoL · CS2 · Valorant · Dota2")
+    print(f"🤖 IA:      Groq Llama 3.1 70B (gratis)")
+    print("=" * 55)
+    print("Comandos disponibles:")
+    print("  /pronosticos /futbol /nba /lol /cs2 /valorant /esports")
+    print("  /stats /verificar")
+    print("=" * 55)
 
-    # Crear aplicación
     app = Application.builder().token(TELEGRAM_TOKEN).build()
 
-    # Registrar comandos
-    app.add_handler(CommandHandler("start", cmd_start))
-    app.add_handler(CommandHandler("pronosticos", cmd_pronosticos))
-    app.add_handler(CommandHandler("futbol", cmd_futbol))
-    app.add_handler(CommandHandler("nba", cmd_nba))
-    app.add_handler(CommandHandler("lol", cmd_lol))
-    app.add_handler(CommandHandler("stats", cmd_stats))
-    app.add_handler(CommandHandler("pesos", cmd_pesos))
-    app.add_handler(CommandHandler("verificar", cmd_verificar))
+    # Comandos
+    handlers = [
+        ("start",        cmd_start),
+        ("pronosticos",  cmd_pronosticos),
+        ("futbol",       cmd_futbol),
+        ("nba",          cmd_nba),
+        ("lol",          cmd_lol),
+        ("cs2",          cmd_cs2),
+        ("valorant",     cmd_valorant),
+        ("esports",      cmd_esports),
+        ("stats",        cmd_stats),
+        ("verificar",    cmd_verificar),
+    ]
+    for name, fn in handlers:
+        app.add_handler(CommandHandler(name, fn))
 
-    # Programar envío automático diario a las 8:00 AM
-    job_queue = app.job_queue
-    if job_queue is not None:
-        from datetime import time as dt_time
+    # Scheduler
+    jq = app.job_queue
+    if jq:
         import pytz
-
+        from datetime import time as dt_time
         tz = pytz.timezone(TIMEZONE)
-
-        # Pronósticos cada mañana
-        job_queue.run_daily(
-            scheduled_predictions,
-            time=dt_time(hour=SCHEDULE_HOUR, minute=SCHEDULE_MINUTE, tzinfo=tz),
-            name="daily_predictions",
+        jq.run_daily(
+            scheduled_send,
+            time=dt_time(SCHEDULE_HOUR, SCHEDULE_MINUTE, tzinfo=tz),
         )
-
-        # Verificación de resultados cada noche a las 11 PM
-        job_queue.run_daily(
+        jq.run_daily(
             scheduled_verify,
-            time=dt_time(hour=23, minute=0, tzinfo=tz),
-            name="nightly_verify",
+            time=dt_time(23, 0, tzinfo=tz),
         )
-
-        print(f"✅ Scheduler configurado: pronósticos a las {SCHEDULE_HOUR}:{SCHEDULE_MINUTE:02d}, verificación a las 23:00")
+        print(f"✅ Scheduler: pronósticos {SCHEDULE_HOUR}:00 · verificación 23:00")
     else:
-        print("⚠️ JobQueue no disponible — instala 'python-telegram-bot[job-queue]'")
+        print("⚠️ JobQueue no disponible — instala: pip install 'python-telegram-bot[job-queue]'")
 
-    # Iniciar bot
-    print("\n🚀 Bot corriendo... esperando comandos")
+    print("\n🚀 Bot corriendo...\n")
     app.run_polling(drop_pending_updates=True)
 
 

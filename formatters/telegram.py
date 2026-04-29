@@ -1,548 +1,373 @@
 """
-Formateador de mensajes para Telegram — Multi-mercado.
-Genera mensajes bonitos con emojis y estructura clara.
+formatters/telegram.py — VERSIÓN CON IA
+
+Formateador de mensajes para Telegram.
+Ahora incluye el análisis de IA en todos los deportes.
 """
 from datetime import datetime
-from predictor.engine import Prediction, get_accuracy_stats, get_current_weights
+from predictor.engine import get_accuracy_stats, get_current_weights
 
 
-def _confidence_bar(confidence: float) -> str:
-    """Genera barra visual de confianza."""
+def _bar(confidence: float) -> str:
     filled = int(confidence / 10)
     return "█" * filled + "░" * (10 - filled)
 
+def _emoji(confidence: float) -> str:
+    if confidence >= 75: return "🔥"
+    if confidence >= 65: return "✅"
+    if confidence >= 58: return "🟡"
+    return "⚪"
 
-def _confidence_emoji(confidence: float) -> str:
-    """Emoji según nivel de confianza."""
-    if confidence >= 75:
-        return "🔥"
-    elif confidence >= 65:
-        return "✅"
-    elif confidence >= 58:
-        return "🟡"
-    else:
-        return "⚪"
+def _upset_emoji(risk: str) -> str:
+    return {"Alto": "⚠️", "Medio": "🟡", "Bajo": "✅"}.get(risk, "🟡")
 
+
+# ──────────────────────────────────────────────────────────────
+#  FÚTBOL
+# ──────────────────────────────────────────────────────────────
 
 def format_football_match(match_data: dict) -> str:
-    """
-    Formatea un partido de fútbol con todos sus mercados.
-    
-    Args:
-        match_data: Dict con 'prediction' y 'markets'
-    """
-    pred = match_data["prediction"]
+    pred    = match_data["prediction"]
     markets = match_data["markets"]
+    ai_txt  = match_data.get("ai_analysis", "")
+    ai_pick = match_data.get("ai_pick", "")
+    ai_odds = match_data.get("ai_odds", "")
 
-    # Header del partido
-    winner_emoji = "👈" if pred.predicted_winner == pred.home_team else "👉"
+    winner_arrow = "👈" if pred.predicted_winner == pred.home_team else "👉"
     lines = [
         f"  ⚽ *{pred.home_team}* vs *{pred.away_team}*",
         "",
+        f"  🏆 *Ganador:* {pred.predicted_winner} {winner_arrow}",
+        f"     {_emoji(pred.confidence)} {pred.confidence}% [{_bar(pred.confidence)}]",
     ]
 
-    # 1X2 - Ganador
-    lines.append(f"  🏆 *Ganador:* {pred.predicted_winner} {winner_emoji}")
-    lines.append(f"     {_confidence_emoji(pred.confidence)} Confianza: {pred.confidence}% [{_confidence_bar(pred.confidence)}]")
+    # Análisis IA (el gran cambio vs antes)
+    if ai_txt:
+        lines.append(f"  🤖 _{ai_txt}_")
 
-    # Factores del ganador
-    for key, desc in pred.factors.items():
-        lines.append(f"     {desc}")
+    # Pick recomendado por la IA
+    if ai_pick:
+        lines.append(f"  💡 *Pick:* {ai_pick}  |  Cuota ~{ai_odds}")
 
     # Over/Under
     ou = markets.get("over_under", {})
     if ou:
         lines.append("")
         lines.append(f"  📊 *Goles:* {ou['recommendation']}")
-        lines.append(f"     {_confidence_emoji(ou['confidence'])} {ou['confidence']}% | {ou['detail']}")
+        lines.append(f"     {_emoji(ou['confidence'])} {ou['confidence']}% | {ou.get('detail','')}")
 
     # BTTS
     btts = markets.get("btts", {})
     if btts:
         lines.append(f"  🎯 *Ambos Anotan:* {btts['recommendation']}")
-        lines.append(f"     {_confidence_emoji(btts['confidence'])} {btts['confidence']}% | {btts['detail']}")
+        lines.append(f"     {_emoji(btts['confidence'])} {btts['confidence']}%")
 
-    # Córners
+    # Córners (si existe)
     corners = markets.get("corners", {})
     if corners:
         lines.append(f"  🚩 *Córners:* {corners['recommendation']}")
-        lines.append(f"     {_confidence_emoji(corners['confidence'])} {corners['confidence']}% | {corners['detail']}")
+        lines.append(f"     {_emoji(corners['confidence'])} {corners['confidence']}% | {corners.get('detail','')}")
 
-    # Resultado exacto
+    # Marcador exacto (si existe)
     exact = markets.get("exact_score", {})
     if exact and exact.get("top_scores"):
-        scores_text = " | ".join([f"{s[0]} ({s[1]}%)" for s in exact["top_scores"]])
-        lines.append(f"  🎲 *Marcador:* {scores_text}")
-        lines.append(f"     xG: {exact['home_xg']}-{exact['away_xg']}")
-
-    # Análisis IA (Groq)
-    ai_analysis = match_data.get("ai_analysis", "")
-    ai_pick = match_data.get("ai_pick", "")
-    ai_odds = match_data.get("ai_odds", "")
-    if ai_analysis:
-        lines.append("")
-        lines.append(f"  🤖 *Análisis IA:* {ai_analysis}")
-    if ai_pick:
-        lines.append(f"  💡 *Pick:* {ai_pick} (cuota ~{ai_odds})")
+        scores = " | ".join([f"{s[0]} ({s[1]}%)" for s in exact["top_scores"]])
+        lines.append(f"  🎲 *Marcador probable:* {scores}")
 
     return "\n".join(lines)
 
 
-def format_nba_match(match_data: dict) -> str:
-    """
-    Formatea un partido de NBA con todos sus mercados.
-    """
-    pred = match_data["prediction"]
-    markets = match_data["markets"]
+# ──────────────────────────────────────────────────────────────
+#  NBA
+# ──────────────────────────────────────────────────────────────
 
-    winner_emoji = "👈" if pred.predicted_winner == pred.home_team else "👉"
+def format_nba_match(match_data: dict) -> str:
+    pred    = match_data["prediction"]
+    markets = match_data["markets"]
+    ai_txt  = match_data.get("ai_analysis", "")
+    ai_pick = match_data.get("ai_pick", "")
+    ai_odds = match_data.get("ai_odds", "")
+
+    winner_arrow = "👈" if pred.predicted_winner == pred.home_team else "👉"
     lines = [
         f"  🏀 *{pred.home_team}* vs *{pred.away_team}*",
         "",
+        f"  🏆 *Ganador:* {pred.predicted_winner} {winner_arrow}",
+        f"     {_emoji(pred.confidence)} {pred.confidence}% [{_bar(pred.confidence)}]",
     ]
 
-    # Ganador
-    lines.append(f"  🏆 *Ganador:* {pred.predicted_winner} {winner_emoji}")
-    lines.append(f"     {_confidence_emoji(pred.confidence)} Confianza: {pred.confidence}% [{_confidence_bar(pred.confidence)}]")
-    for key, desc in pred.factors.items():
-        lines.append(f"     {desc}")
+    if ai_txt:
+        lines.append(f"  🤖 _{ai_txt}_")
+    if ai_pick:
+        lines.append(f"  💡 *Pick:* {ai_pick}  |  Cuota ~{ai_odds}")
 
     # Over/Under puntos
     ou = markets.get("over_under", {})
     if ou:
         lines.append("")
         lines.append(f"  📊 *Puntos:* {ou['recommendation']}")
-        lines.append(f"     {_confidence_emoji(ou['confidence'])} {ou['confidence']}% | Proy: {ou['projected_total']} pts")
-        lines.append(f"     {ou['detail']}")
+        lines.append(
+            f"     {_emoji(ou['confidence'])} {ou['confidence']}% | "
+            f"Total proy: {ou.get('projected_total','?')} pts"
+        )
+        lines.append(f"     {ou.get('detail','')}")
 
-    # Handicap
+    # Spread
     hc = markets.get("handicap", {})
     if hc:
         lines.append(f"  📐 *Spread:* {hc['recommendation']}")
-        lines.append(f"     {_confidence_emoji(hc['confidence'])} {hc['confidence']}% | {hc['detail']}")
+        lines.append(
+            f"     {_emoji(hc['confidence'])} {hc['confidence']}% | "
+            f"{hc.get('detail','')}"
+        )
 
     # Primer cuarto
     q1 = markets.get("first_quarter", {})
     if q1:
         lines.append(f"  ⏱️ *1er Cuarto:* {q1['recommendation']}")
-        lines.append(f"     {_confidence_emoji(q1['confidence'])} {q1['confidence']}% | {q1['detail']}")
+        lines.append(f"     {_emoji(q1['confidence'])} {q1['confidence']}%")
 
-    # Puntos por equipo
+    # Líneas por equipo
     tp = markets.get("team_points", {})
     if tp:
-        lines.append(f"  📈 *Líneas:* {tp['home_team']} O/U {tp['home_line']} (prom {tp['home_avg']})")
-        lines.append(f"     {tp['away_team']} O/U {tp['away_line']} (prom {tp['away_avg']})")
+        lines.append(
+            f"  📈 *Líneas:* {tp['home_team']} O/U {tp['home_line']} "
+            f"(prom {tp['home_avg']}) | "
+            f"{tp['away_team']} O/U {tp['away_line']} (prom {tp['away_avg']})"
+        )
 
     return "\n".join(lines)
 
 
-def format_lol_match(prediction: Prediction) -> str:
+# ──────────────────────────────────────────────────────────────
+#  ESPORTS (LoL, CS2, Valorant, Dota 2)
+# ──────────────────────────────────────────────────────────────
+
+def format_esport_match(prediction, sport_label: str = "🎮 Esports") -> str:
     """
-    Formatea un partido de LoL (solo ganador directo).
+    Formatea un partido de esports con análisis IA.
+    prediction puede ser un Prediction object o un dict.
     """
-    winner_emoji = "👈" if prediction.predicted_winner == prediction.home_team else "👉"
+    # Compatibilidad con ambos formatos
+    if hasattr(prediction, "predicted_winner"):
+        pred       = prediction
+        ai_txt     = getattr(pred, "ai_analysis", "")
+        ai_pick    = getattr(pred, "ai_pick", "")
+        ai_odds    = getattr(pred, "ai_odds", "")
+        upset_risk = getattr(pred, "upset_risk", "Medio")
+        map_pick   = getattr(pred, "map_pick", "")
+    else:
+        pred       = prediction
+        ai_txt     = pred.get("ai_analysis", "")
+        ai_pick    = pred.get("ai_pick", "")
+        ai_odds    = pred.get("ai_odds", "")
+        upset_risk = pred.get("upset_risk", "Medio")
+        map_pick   = pred.get("map_pick", "")
+
+    winner_arrow = "👈" if pred.predicted_winner == pred.home_team else "👉"
+
     lines = [
-        f"  🎮 *{prediction.home_team}* vs *{prediction.away_team}*",
-        f"  🏆 *Ganador:* {prediction.predicted_winner} {winner_emoji}",
-        f"     {_confidence_emoji(prediction.confidence)} Confianza: {prediction.confidence}% [{_confidence_bar(prediction.confidence)}]",
+        f"  🎮 *{pred.home_team}* vs *{pred.away_team}*",
+        "",
+        f"  🏆 *Ganador:* {pred.predicted_winner} {winner_arrow}",
+        f"     {_emoji(pred.confidence)} {pred.confidence}% [{_bar(pred.confidence)}]",
     ]
-    for key, desc in prediction.factors.items():
+
+    if ai_txt:
+        lines.append(f"  🤖 _{ai_txt}_")
+    if ai_pick:
+        lines.append(f"  💡 *Pick:* {ai_pick}  |  Cuota ~{ai_odds}")
+    if map_pick:
+        lines.append(f"  🗺️ *Mapa/Side:* {map_pick}")
+
+    lines.append(
+        f"  {_upset_emoji(upset_risk)} *Riesgo sorpresa:* {upset_risk}"
+    )
+
+    for key, desc in pred.factors.items():
         lines.append(f"     {desc}")
 
     return "\n".join(lines)
 
 
-def _get_best_bets(
-    football_predictions: list,
-    nba_predictions: list,
-    lol_predictions: list,
-) -> list:
-    """
-    Analiza TODOS los mercados de todos los deportes y selecciona
-    las 1-2 apuestas con mayor confianza del día.
-    
-    Returns:
-        Lista de dicts: [{sport, match, market, recommendation, confidence, detail}]
-    """
-    candidates = []
-
-    # ---- Fútbol: analizar todos los mercados ----
-    for match_data, league in football_predictions:
-        pred = match_data["prediction"]
-        markets = match_data["markets"]
-        match_label = f"{pred.home_team} vs {pred.away_team}"
-
-        # Ganador 1X2
-        candidates.append({
-            "sport": "⚽",
-            "league": league,
-            "match": match_label,
-            "market": "Ganador",
-            "recommendation": pred.predicted_winner,
-            "confidence": pred.confidence,
-            "detail": f"Confianza {pred.confidence}%",
-        })
-
-        # Over/Under
-        ou = markets.get("over_under", {})
-        if ou and ou.get("confidence", 0) >= 55:
-            candidates.append({
-                "sport": "⚽",
-                "league": league,
-                "match": match_label,
-                "market": "Goles",
-                "recommendation": ou["recommendation"],
-                "confidence": ou["confidence"],
-                "detail": ou.get("detail", ""),
-            })
-
-        # BTTS
-        btts = markets.get("btts", {})
-        if btts and btts.get("confidence", 0) >= 60:
-            candidates.append({
-                "sport": "⚽",
-                "league": league,
-                "match": match_label,
-                "market": "Ambos Anotan",
-                "recommendation": btts["recommendation"],
-                "confidence": btts["confidence"],
-                "detail": btts.get("detail", ""),
-            })
-
-        # Córners
-        corners = markets.get("corners", {})
-        if corners and corners.get("confidence", 0) >= 60:
-            candidates.append({
-                "sport": "⚽",
-                "league": league,
-                "match": match_label,
-                "market": "Córners",
-                "recommendation": corners["recommendation"],
-                "confidence": corners["confidence"],
-                "detail": corners.get("detail", ""),
-            })
-
-    # ---- NBA: analizar mercados ----
-    for match_data in nba_predictions:
-        pred = match_data["prediction"]
-        markets = match_data["markets"]
-        match_label = f"{pred.home_team} vs {pred.away_team}"
-
-        # Ganador
-        candidates.append({
-            "sport": "🏀",
-            "league": "NBA",
-            "match": match_label,
-            "market": "Ganador",
-            "recommendation": pred.predicted_winner,
-            "confidence": pred.confidence,
-            "detail": f"Confianza {pred.confidence}%",
-        })
-
-        # Over/Under
-        ou = markets.get("over_under", {})
-        if ou and ou.get("confidence", 0) >= 55:
-            candidates.append({
-                "sport": "🏀",
-                "league": "NBA",
-                "match": match_label,
-                "market": "Puntos",
-                "recommendation": ou["recommendation"],
-                "confidence": ou["confidence"],
-                "detail": f"Proy: {ou.get('projected_total', '?')} pts",
-            })
-
-        # Handicap/Spread
-        hc = markets.get("handicap", {})
-        if hc and hc.get("confidence", 0) >= 60:
-            candidates.append({
-                "sport": "🏀",
-                "league": "NBA",
-                "match": match_label,
-                "market": "Spread",
-                "recommendation": hc["recommendation"],
-                "confidence": hc["confidence"],
-                "detail": hc.get("detail", ""),
-            })
-
-    # ---- LoL: solo ganador ----
-    for pred, league in lol_predictions:
-        match_label = f"{pred.home_team} vs {pred.away_team}"
-        candidates.append({
-            "sport": "🎮",
-            "league": league,
-            "match": match_label,
-            "market": "Ganador",
-            "recommendation": pred.predicted_winner,
-            "confidence": pred.confidence,
-            "detail": f"Confianza {pred.confidence}%",
-        })
-
-    # Ordenar por confianza descendente
-    candidates.sort(key=lambda x: x["confidence"], reverse=True)
-
-    # Seleccionar máximo 2, pero solo si tienen >= 60% confianza
-    best = [c for c in candidates if c["confidence"] >= 60][:2]
-
-    # Si no hay ninguno con 60%+, tomar el mejor que haya
-    if not best and candidates:
-        best = [candidates[0]]
-
-    return best
-
-
-def _format_best_bets(best_bets: list) -> str:
-    """Formatea la sección de mejores apuestas del día."""
-    if not best_bets:
-        return ""
-
-    lines = [
-        "🔥🔥🔥 *APUESTAS DEL DÍA* 🔥🔥🔥",
-        "━━━━━━━━━━━━━━━━━━━━",
-        "_Las apuestas con mayor probabilidad:_",
-        "",
-    ]
-
-    for i, bet in enumerate(best_bets, 1):
-        medal = "🥇" if i == 1 else "🥈"
-        lines.append(f"{medal} *PICK #{i}*")
-        lines.append(f"   {bet['sport']} {bet['match']}")
-        lines.append(f"   📌 *{bet['market']}:* {bet['recommendation']}")
-        lines.append(f"   🎯 Confianza: *{bet['confidence']}%* [{_confidence_bar(bet['confidence'])}]")
-        lines.append(f"   📋 {bet['detail']}")
-        lines.append(f"   🏆 _{bet['league']}_")
-        lines.append("")
-
-    lines.append("━━━━━━━━━━━━━━━━━━━━")
-    lines.append("")
-
-    return "\n".join(lines)
-
+# ──────────────────────────────────────────────────────────────
+#  MENSAJE DIARIO COMPLETO
+# ──────────────────────────────────────────────────────────────
 
 def format_daily_predictions(
     football_predictions: list,
     nba_predictions: list,
     lol_predictions: list,
+    esport_predictions: dict = None,  # {"cs2": [...], "valorant": [...]}
     is_tomorrow: bool = False,
 ) -> str:
-    """
-    Formatea todos los pronósticos del día en un solo mensaje.
-    Incluye sección de APUESTAS DEL DÍA al inicio.
-    
-    Args:
-        football_predictions: Lista de (match_data_dict, league_name)
-        nba_predictions: Lista de match_data_dicts
-        lol_predictions: Lista de (prediction, league_name) tuples
-        is_tomorrow: Si son pronósticos para mañana
-    """
-    today = datetime.now()
-    date_str = today.strftime("%d/%m/%Y")
+    today     = datetime.now()
+    date_str  = today.strftime("%d/%m/%Y")
     day_label = "MAÑANA" if is_tomorrow else "HOY"
 
     lines = [
-        f"📊 *PRONÓSTICOS DEPORTIVOS — {date_str}*",
-        f"🗓️ Partidos de {day_label}",
+        f"📊 *PRONÓSTICOS CON IA — {date_str}*",
+        f"🗓️ Partidos de {day_label}  🤖 _Análisis: Groq Llama 3.1_",
         "",
     ]
 
-    # ---- APUESTAS DEL DÍA (al inicio) ----
-    has_any = football_predictions or nba_predictions or lol_predictions
-    if has_any:
-        best_bets = _get_best_bets(football_predictions, nba_predictions, lol_predictions)
-        best_bets_text = _format_best_bets(best_bets)
-        if best_bets_text:
-            lines.append(best_bets_text)
-
-    # ---- FÚTBOL ----
+    # ── Fútbol ────────────────────────────────────────────────
     if football_predictions:
         lines.append("⚽ *FÚTBOL*")
         lines.append("━━━━━━━━━━━━━━━━━━━━")
-
-        # Agrupar por liga
         by_league = {}
         for match_data, league in football_predictions:
-            if league not in by_league:
-                by_league[league] = []
-            by_league[league].append(match_data)
-
+            by_league.setdefault(league, []).append(match_data)
         for league, matches in by_league.items():
             lines.append(f"\n🏆 *{league}*")
-            for match_data in matches:
-                lines.append(format_football_match(match_data))
+            for md in matches:
+                lines.append(format_football_match(md))
                 lines.append("  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─")
 
-    # ---- NBA ----
+    # ── NBA ───────────────────────────────────────────────────
     if nba_predictions:
-        lines.append("")
-        lines.append("🏀 *NBA*")
-        lines.append("━━━━━━━━━━━━━━━━━━━━")
-
-        for match_data in nba_predictions:
-            lines.append(format_nba_match(match_data))
+        lines.extend(["", "🏀 *NBA*", "━━━━━━━━━━━━━━━━━━━━"])
+        for md in nba_predictions:
+            lines.append(format_nba_match(md))
             lines.append("  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─")
 
-    # ---- LOL ----
+    # ── LoL (formato heredado) ────────────────────────────────
     if lol_predictions:
-        lines.append("")
-        lines.append("🎮 *LEAGUE OF LEGENDS*")
-        lines.append("━━━━━━━━━━━━━━━━━━━━")
-        lines.append("_(Solo ganador directo)_")
-
+        lines.extend(["", "🎮 *LEAGUE OF LEGENDS*", "━━━━━━━━━━━━━━━━━━━━"])
         by_league = {}
         for pred, league in lol_predictions:
-            if league not in by_league:
-                by_league[league] = []
-            by_league[league].append(pred)
-
+            by_league.setdefault(league, []).append(pred)
         for league, preds in by_league.items():
             lines.append(f"\n🏆 *{league}*")
             for pred in preds:
-                lines.append(format_lol_match(pred))
+                lines.append(format_esport_match(pred, "🎮 LoL"))
                 lines.append("")
 
-    # ---- Sin partidos ----
-    if not football_predictions and not nba_predictions and not lol_predictions:
+    # ── Otros esports (CS2, Valorant, Dota2) ─────────────────
+    if esport_predictions:
+        icons = {"cs2": "🔫 *CS2*", "valorant": "🌀 *VALORANT*",
+                 "dota2": "🏹 *DOTA 2*", "rl": "🚗 *ROCKET LEAGUE*"}
+        for sport_key, matches in esport_predictions.items():
+            if not matches:
+                continue
+            lines.extend([
+                "", icons.get(sport_key, f"🎮 *{sport_key.upper()}*"),
+                "━━━━━━━━━━━━━━━━━━━━",
+            ])
+            by_league = {}
+            for pred, league, label in matches:
+                by_league.setdefault(league, []).append(pred)
+            for league, preds in by_league.items():
+                lines.append(f"\n🏆 *{league}*")
+                for pred in preds:
+                    lines.append(format_esport_match(pred))
+                    lines.append("")
+
+    # ── Sin partidos ──────────────────────────────────────────
+    if not any([football_predictions, nba_predictions,
+                lol_predictions, esport_predictions]):
         lines.append("😴 No se encontraron partidos para hoy.")
-        lines.append("Intenta de nuevo mañana o usa /futbol /nba /lol")
+        lines.append("Usa /futbol /nba /lol /cs2 /valorant")
 
-    # ---- Footer con stats ----
+    # ── Footer stats ──────────────────────────────────────────
     stats = get_accuracy_stats()
-    total_correct = sum(s["monthly"]["correct"] for s in stats.values())
-    total_predictions = sum(s["monthly"]["total"] for s in stats.values())
+    total_ok  = sum(s["monthly"]["correct"] for s in stats.values())
+    total_all = sum(s["monthly"]["total"]   for s in stats.values())
 
-    lines.append("")
-    lines.append("━━━━━━━━━━━━━━━━━━━━")
-    lines.append("⚠️ _Los pronósticos son orientativos_")
-    lines.append("⚠️ _No son garantía de resultado_")
+    lines.extend([
+        "",
+        "━━━━━━━━━━━━━━━━━━━━",
+        "⚠️ _Pronósticos orientativos — no garantía_",
+    ])
 
-    if total_predictions > 0:
-        accuracy = round(total_correct / total_predictions * 100, 1)
+    if total_all > 0:
+        acc = round(total_ok / total_all * 100, 1)
         lines.append(
-            f"📊 _Aciertos ganador del mes: {accuracy}% ({total_correct}/{total_predictions})_"
+            f"📊 _Aciertos ganador este mes: {acc}% ({total_ok}/{total_all})_"
         )
     else:
-        lines.append("📊 _Sin datos de aciertos aún — se calculan automáticamente_")
+        lines.append("📊 _Sin datos de aciertos aún_")
 
-    lines.append("🧠 _Auto-aprendizaje activo_")
-
+    lines.append("🤖 _Powered by Groq Llama 3.1 70B · Auto-aprendizaje activo_")
     return "\n".join(lines)
 
 
+# ──────────────────────────────────────────────────────────────
+#  STATS + WELCOME (sin cambios relevantes, solo actualizados)
+# ──────────────────────────────────────────────────────────────
+
 def format_stats_message() -> str:
-    """Formatea las estadísticas de acierto del bot."""
-    stats = get_accuracy_stats()
-    weights = get_current_weights()
-    month_name = datetime.now().strftime("%B %Y")
-
-    lines = [
+    stats    = get_accuracy_stats()
+    weights  = get_current_weights()
+    month    = datetime.now().strftime("%B %Y")
+    lines    = [
         "📈 *ESTADÍSTICAS DEL BOT*",
-        f"📅 {month_name}",
-        "━━━━━━━━━━━━━━━━━━━━",
-        "",
+        f"📅 {month}  🤖 _Groq Llama 3.1_",
+        "━━━━━━━━━━━━━━━━━━━━", "",
     ]
-
-    sport_names = {"football": "⚽ Fútbol", "nba": "🏀 NBA", "lol": "🎮 LoL"}
-    total_correct = 0
-    total_predictions = 0
-
+    sport_names = {
+        "football": "⚽ Fútbol",
+        "nba":      "🏀 NBA",
+        "lol":      "🎮 Esports",
+    }
+    total_ok = total_all = 0
     for sport, name in sport_names.items():
         s = stats[sport]
         lines.append(f"*{name}*")
         if s["monthly"]["total"] > 0:
-            lines.append(f"  Este mes: {s['monthly']['accuracy']}% ({s['monthly']['correct']}/{s['monthly']['total']})")
+            lines.append(
+                f"  Mes: {s['monthly']['accuracy']}% "
+                f"({s['monthly']['correct']}/{s['monthly']['total']})"
+            )
         else:
-            lines.append("  Este mes: Sin datos")
+            lines.append("  Mes: Sin datos")
         if s["all_time"]["total"] > 0:
-            lines.append(f"  Histórico: {s['all_time']['accuracy']}% ({s['all_time']['correct']}/{s['all_time']['total']})")
-        else:
-            lines.append("  Histórico: Sin datos")
-        total_correct += s["all_time"]["correct"]
-        total_predictions += s["all_time"]["total"]
+            lines.append(
+                f"  Histórico: {s['all_time']['accuracy']}% "
+                f"({s['all_time']['correct']}/{s['all_time']['total']})"
+            )
+        total_ok  += s["all_time"]["correct"]
+        total_all += s["all_time"]["total"]
         lines.append("")
 
-    # Pesos actuales
-    lines.append("🧠 *PESOS DEL ALGORITMO (ganador)*")
-    lines.append("_(se auto-ajustan con cada resultado)_")
-    lines.append("")
-
-    weight_names = {
-        "table_position": "📊 Tabla",
-        "recent_form": "🔥 Racha",
-        "home_advantage": "🏠 Local",
-        "head_to_head": "⚔️ H2H",
-        "goals_form": "⚽ Goles",
-        "record": "📊 Récord",
-        "points_avg": "🏀 Puntos",
-        "win_rate": "📊 WinRate",
-        "tournament_position": "🏆 Torneo",
-        "side_preference": "🔵 Side",
-    }
-
-    for sport, name in sport_names.items():
-        lines.append(f"*{name}:*")
-        w = weights.get(sport, {})
-        for factor, value in sorted(w.items(), key=lambda x: -x[1]):
-            label = weight_names.get(factor, factor)
-            pct = round(value * 100)
-            bar = "▓" * (pct // 5) + "░" * (20 - pct // 5)
-            lines.append(f"  {label}: {bar} {pct}%")
-        lines.append("")
-
-    if total_predictions > 0:
-        overall = round(total_correct / total_predictions * 100, 1)
+    if total_all > 0:
+        overall = round(total_ok / total_all * 100, 1)
         lines.append(f"🎯 *Precisión general: {overall}%*")
     else:
-        lines.append("🎯 _Precisión: pendiente de resultados_")
-
-    lines.append("")
-    lines.append("_Nota: Los mercados adicionales (goles, córners,_")
-    lines.append("_spread, etc.) no se rastrean por el auto-aprendizaje._")
-    lines.append("_Solo el mercado 'ganador' se auto-ajusta._")
+        lines.append("🎯 _Precisión: pendiente de primeros resultados_")
 
     return "\n".join(lines)
 
 
 def format_welcome_message() -> str:
-    """Mensaje de bienvenida cuando el usuario usa /start."""
     return (
-        "🏆 *¡Bienvenido al Bot de Pronósticos Deportivos\\!*\n"
+        "🏆 *¡Bienvenido al Bot de Pronósticos con IA\\!*\n"
         "\n"
-        "Soy un bot con *inteligencia artificial auto\\-adaptativa*\\. "
-        "Analizo estadísticas reales para generar pronósticos diarios\\.\n"
+        "Uso *Groq Llama 3\\.1 70B* para analizar cada partido con\n"
+        "estadísticas reales y producir pronósticos fundamentados\\.\n"
         "\n"
         "📊 *Deportes y mercados:*\n"
         "\n"
-        "⚽ *Fútbol* \\(Premier, La Liga, Champions, Serie A,\n"
-        "  BetPlay, Libertadores, Sudamericana\\)\n"
-        "  • Ganador 1X2\n"
-        "  • Over/Under 2\\.5 goles\n"
-        "  • Ambos Anotan \\(BTTS\\)\n"
-        "  • Córners estimados\n"
-        "  • Marcador exacto probable\n"
+        "⚽ *Fútbol* \\(Libertadores, Sudamericana, Premier,\n"
+        "  La Liga, Champions, BetPlay\\)\n"
+        "  • Ganador · Over/Under · BTTS · Córners · Marcador\n"
         "\n"
         "🏀 *NBA*\n"
-        "  • Ganador directo\n"
-        "  • Over/Under puntos totales\n"
-        "  • Handicap / Spread\n"
-        "  • 1er Cuarto\n"
-        "  • Líneas por equipo\n"
+        "  • Ganador · Over/Under pts · Spread · Q1 · Líneas\n"
         "\n"
-        "🎮 *League of Legends* \\(esports pro\\)\n"
-        "  • Ganador directo\n"
-        "\n"
-        "🧠 *¿Cómo funciono?*\n"
-        "Analizo posición en tabla, rachas, enfrentamientos directos, "
-        "ventaja local, promedios goleadores y más\\. Después de cada "
-        "jornada, verifico resultados y *auto\\-ajusto mi algoritmo*\\.\n"
+        "🎮 *Esports* \\(LoL, CS2, Valorant, Dota 2\\)\n"
+        "  • Ganador · Riesgo sorpresa · Ventaja de mapa/side\n"
         "\n"
         "📱 *Comandos:*\n"
-        "  /pronosticos — Todos los pronósticos\n"
+        "  /pronosticos — Todos\n"
         "  /futbol — Solo fútbol\n"
         "  /nba — Solo NBA\n"
-        "  /lol — Solo LoL\n"
+        "  /lol — League of Legends\n"
+        "  /cs2 — Counter\\-Strike 2\n"
+        "  /valorant — Valorant\n"
         "  /stats — Estadísticas de acierto\n"
-        "  /pesos — Pesos del algoritmo\n"
         "  /verificar — Verificar resultados\n"
         "\n"
-        "⏰ _Envío automático diario a las 8:00 AM \\(COL\\)_"
+        "⏰ _Envío automático 8:00 AM \\(COL\\)_\n"
+        "🤖 _Powered by Groq · 100% gratis_"
     )

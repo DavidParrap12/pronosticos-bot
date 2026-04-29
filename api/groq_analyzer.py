@@ -148,6 +148,7 @@ def _build_prompt(
     altitude_note = f"Altitud del estadio: {altitude} msnm (factor importante)" if altitude else ""
 
     if sport == "football":
+        stats_label = "goles/partido"
         markets_req = (
             '"predicted_winner": "nombre del equipo ganador",'
             '"confidence": número entre 52 y 88,'
@@ -155,23 +156,25 @@ def _build_prompt(
             '"pick_odds": "cuota estimada como string (ej: 1.75)",'
             '"btts": "Sí o No",'
             '"over_under": "Over 2.5 o Under 2.5",'
-            '"btts_confidence": número,'
-            '"ou_confidence": número,'
+            '"btts_confidence": número entre 52 y 80,'
+            '"ou_confidence": número entre 52 y 80,'
             '"analysis": "análisis en español de 2-3 oraciones con las razones clave",'
             '"key_factors": ["factor1", "factor2", "factor3"]'
         )
-    elif sport == "nba":
+    elif sport in ("nba", "basketball"):
+        stats_label = "puntos/partido"
         markets_req = (
             '"predicted_winner": "nombre del equipo",'
             '"confidence": número entre 52 y 85,'
-            '"pick": "mercado recomendado (ej: Victoria X, Over 215.5)",'
+            '"pick": "mercado recomendado (ej: Victoria X, Over 218.5 puntos)",'
             '"pick_odds": "cuota estimada",'
-            '"over_under_pts": "Over o Under con la línea (ej: Over 218.5)",'
+            '"over_under_pts": "Over o Under con la línea de puntos totales (ej: Over 218.5)",'
             '"spread_pick": "equipo con spread (ej: Lakers -4.5)",'
-            '"analysis": "análisis en español de 2-3 oraciones",'
+            '"analysis": "análisis en español de 2-3 oraciones. Considera la ventaja de cancha local (~3.5 pts en NBA), el ritmo de juego, y la eficiencia ofensiva/defensiva",'
             '"key_factors": ["factor1", "factor2", "factor3"]'
         )
     else:
+        stats_label = "puntos/mapa"
         markets_req = (
             '"predicted_winner": "nombre del equipo",'
             '"confidence": número entre 52 y 80,'
@@ -192,12 +195,14 @@ DATOS DISPONIBLES:
 - Forma reciente {away_team}: {away_form}
 - Posición en tabla {home_team}: {home_position}
 - Posición en tabla {away_team}: {away_position}
-- Promedio goles/partido {home_team}: {home_goals_avg} (recibe {home_conceded})
-- Promedio goles/partido {away_team}: {away_goals_avg} (recibe {away_conceded})
+- Promedio {stats_label} {home_team}: {home_goals_avg} (recibe {home_conceded})
+- Promedio {stats_label} {away_team}: {away_goals_avg} (recibe {away_conceded})
 - Enfrentamientos directos: {h2h}
 - Bajas/lesiones: {injuries}
-- Estadio: {venue}
+- Estadio: {venue} (LOCAL: {home_team})
 {altitude_note}
+
+IMPORTANTE: El equipo LOCAL juega en casa y tiene ventaja. Analiza cuál equipo tiene mejor forma RECIENTE, no solo mejor récord global.
 
 RESPONDE EXACTAMENTE CON ESTE JSON (sin texto extra):
 {{{markets_req}}}"""

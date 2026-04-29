@@ -37,7 +37,7 @@ def predict_match(
     
     Flujo:
       1. Obtiene datos REALES de ESPN (récord, forma, goles, H2H)
-      2. Empaqueta todo y lo manda a Groq (Llama 3.1 70B)
+      2. Empaqueta todo y lo manda a Groq (Llama 3.3 70B)
       3. La IA analiza y devuelve predicción con confianza real
       4. Se guarda en historial para auto-aprendizaje
     """

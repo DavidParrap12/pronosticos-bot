@@ -120,7 +120,7 @@ def predict_match(
 
     Flujo:
       1. Obtiene datos reales de ambos equipos (forma, tabla, H2H)
-      2. Empaqueta esos datos y los manda a Groq (Llama 3.1 70B)
+      2. Empaqueta esos datos y los manda a Groq (Llama 3.3 70B)
       3. La IA devuelve el análisis en JSON
       4. Se combina con el engine existente para guardar en historial
 

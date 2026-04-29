@@ -207,7 +207,7 @@ def format_daily_predictions(
 
     lines = [
         f"📊 *PRONÓSTICOS CON IA — {date_str}*",
-        f"🗓️ Partidos de {day_label}  🤖 _Análisis: Groq Llama 3.1_",
+        f"🗓️ Partidos de {day_label}  🤖 _Análisis: Groq Llama 3.3_",
         "",
     ]
 
@@ -288,7 +288,7 @@ def format_daily_predictions(
     else:
         lines.append("📊 _Sin datos de aciertos aún_")
 
-    lines.append("🤖 _Powered by Groq Llama 3.1 70B · Auto-aprendizaje activo_")
+    lines.append("🤖 _Powered by Groq Llama 3.3 70B · Auto-aprendizaje activo_")
     return "\n".join(lines)
 
 
@@ -302,7 +302,7 @@ def format_stats_message() -> str:
     month    = datetime.now().strftime("%B %Y")
     lines    = [
         "📈 *ESTADÍSTICAS DEL BOT*",
-        f"📅 {month}  🤖 _Groq Llama 3.1_",
+        f"📅 {month}  🤖 _Groq Llama 3.3_",
         "━━━━━━━━━━━━━━━━━━━━", "",
     ]
     sport_names = {

@@ -2,7 +2,7 @@
 pronosticos_bot.py — VERSIÓN CON IA COMPLETA
 
 Bot de Telegram con:
-  ✅ Groq Llama 3.1 70B (gratis)
+  ✅ Groq Llama 3.3 70B (gratis)
   ✅ Fútbol multi-mercado
   ✅ NBA multi-mercado
   ✅ LoL, CS2, Valorant, Dota 2
@@ -426,14 +426,14 @@ async def scheduled_verify(context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     print("=" * 55)
-    print("🏆 Bot de Pronósticos con IA — Groq Llama 3.1 70B")
+    print("🏆 Bot de Pronósticos con IA — Groq Llama 3.3 70B")
     print("=" * 55)
     print(f"📱 Chat ID:  {CHAT_ID}")
     print(f"⏰ Envío:    {SCHEDULE_HOUR}:{SCHEDULE_MINUTE:02d} ({TIMEZONE})")
     print(f"⚽ Fútbol:   {', '.join(FOOTBALL_LEAGUES.keys())} + CONMEBOL")
     print(f"🏀 NBA:      Activo")
     print(f"🎮 Esports: LoL · CS2 · Valorant · Dota2")
-    print(f"🤖 IA:      Groq Llama 3.1 70B (gratis)")
+    print(f"🤖 IA:      Groq Llama 3.3 70B (gratis)")
     print("=" * 55)
     print("Comandos disponibles:")
     print("  /pronosticos /futbol /nba /lol /cs2 /valorant /esports")

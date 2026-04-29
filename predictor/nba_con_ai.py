@@ -137,7 +137,7 @@ def predict_match(home_team: str, away_team: str, event_id: str = None) -> dict:
 
     Flujo:
       1. Obtiene record de temporada, forma reciente y H2H
-      2. Manda los datos a Groq (Llama 3.1 70B)
+      2. Manda los datos a Groq (Llama 3.3 70B)
       3. La IA devuelve: ganador, over/under, spread, análisis
       4. Se combina con el engine para guardar en historial
     """

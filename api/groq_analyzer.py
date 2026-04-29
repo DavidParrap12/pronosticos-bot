@@ -2,7 +2,7 @@
 api/groq_analyzer.py
 
 Analizador de partidos con IA usando Groq (GRATIS).
-Llama 3.1 70B — 14,400 requests/día en el tier gratuito.
+Llama 3.3 70B — 14,400 requests/día en el tier gratuito.
 
 Registro: https://console.groq.com (solo email, sin tarjeta)
 """

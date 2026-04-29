@@ -60,343 +60,26 @@
     "correct": null
   },
   {
-    "sport": "football",
-    "league": "Champions League",
-    "home_team": "Paris SG",
-    "away_team": "Bayern Munich",
-    "predicted_winner": "Paris SG",
-    "confidence": 52.0,
-    "factors": {
-      "home_advantage": "🏠 Ventaja local: Paris SG"
-    },
-    "factor_scores": {
-      "table_position": 0.5,
-      "recent_form": 0.5,
-      "home_advantage": 0.58,
-      "head_to_head": 0.5,
-      "goals_form": 0.5
-    },
-    "event_id": "2466172",
-    "timestamp": "2026-04-28T16:57:43.153805",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "football",
-    "league": "Champions League",
-    "home_team": "Atlético Madrid",
-    "away_team": "Arsenal",
-    "predicted_winner": "Atlético Madrid",
-    "confidence": 52.0,
-    "factors": {
-      "home_advantage": "🏠 Ventaja local: Atlético Madrid"
-    },
-    "factor_scores": {
-      "table_position": 0.5,
-      "recent_form": 0.5,
-      "home_advantage": 0.58,
-      "head_to_head": 0.5,
-      "goals_form": 0.5
-    },
-    "event_id": "2466173",
-    "timestamp": "2026-04-28T16:57:43.156964",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "football",
-    "league": "Copa Libertadores",
-    "home_team": "Lanús",
-    "away_team": "Liga de Quito",
-    "predicted_winner": "Lanús",
-    "confidence": 52.0,
-    "factors": {
-      "home_advantage": "🏠 Ventaja local: Lanús"
-    },
-    "factor_scores": {
-      "table_position": 0.5,
-      "recent_form": 0.5,
-      "home_advantage": 0.58,
-      "head_to_head": 0.5,
-      "goals_form": 0.5
-    },
-    "event_id": "espn_401865510",
-    "timestamp": "2026-04-28T16:57:43.203210",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "football",
-    "league": "Copa Libertadores",
-    "home_team": "Libertad",
-    "away_team": "Independiente del Valle",
-    "predicted_winner": "Libertad",
-    "confidence": 52.0,
-    "factors": {
-      "home_advantage": "🏠 Ventaja local: Libertad"
-    },
-    "factor_scores": {
-      "table_position": 0.5,
-      "recent_form": 0.5,
-      "home_advantage": 0.58,
-      "head_to_head": 0.5,
-      "goals_form": 0.5
-    },
-    "event_id": "espn_401865511",
-    "timestamp": "2026-04-28T16:57:43.212155",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "football",
-    "league": "Copa Libertadores",
-    "home_team": "Universidad Central",
-    "away_team": "Rosario Central",
-    "predicted_winner": "Universidad Central",
-    "confidence": 52.0,
-    "factors": {
-      "home_advantage": "🏠 Ventaja local: Universidad Central"
-    },
-    "factor_scores": {
-      "table_position": 0.5,
-      "recent_form": 0.5,
-      "home_advantage": 0.58,
-      "head_to_head": 0.5,
-      "goals_form": 0.5
-    },
-    "event_id": "espn_401865515",
-    "timestamp": "2026-04-28T16:57:43.221710",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "football",
-    "league": "Copa Libertadores",
-    "home_team": "Cruzeiro",
-    "away_team": "Boca Juniors",
-    "predicted_winner": "Cruzeiro",
-    "confidence": 52.0,
-    "factors": {
-      "home_advantage": "🏠 Ventaja local: Cruzeiro"
-    },
-    "factor_scores": {
-      "table_position": 0.5,
-      "recent_form": 0.5,
-      "home_advantage": 0.58,
-      "head_to_head": 0.5,
-      "goals_form": 0.5
-    },
-    "event_id": "espn_401865505",
-    "timestamp": "2026-04-28T16:57:43.231587",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "football",
-    "league": "Copa Libertadores",
-    "home_team": "Deportes Tolima",
-    "away_team": "Coquimbo Unido",
-    "predicted_winner": "Deportes Tolima",
-    "confidence": 52.0,
-    "factors": {
-      "home_advantage": "🏠 Ventaja local: Deportes Tolima"
-    },
-    "factor_scores": {
-      "table_position": 0.5,
-      "recent_form": 0.5,
-      "home_advantage": 0.58,
-      "head_to_head": 0.5,
-      "goals_form": 0.5
-    },
-    "event_id": "espn_401865506",
-    "timestamp": "2026-04-28T16:57:43.240375",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "football",
-    "league": "Copa Libertadores",
-    "home_team": "Sporting Cristal",
-    "away_team": "Atlético Junior",
-    "predicted_winner": "Sporting Cristal",
-    "confidence": 52.0,
-    "factors": {
-      "home_advantage": "🏠 Ventaja local: Sporting Cristal"
-    },
-    "factor_scores": {
-      "table_position": 0.5,
-      "recent_form": 0.5,
-      "home_advantage": 0.58,
-      "head_to_head": 0.5,
-      "goals_form": 0.5
-    },
-    "event_id": "espn_401865514",
-    "timestamp": "2026-04-28T16:57:43.249781",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "football",
-    "league": "Copa Sudamericana",
-    "home_team": "Botafogo",
-    "away_team": "Independiente Petrolero",
-    "predicted_winner": "Botafogo",
-    "confidence": 52.0,
-    "factors": {
-      "home_advantage": "🏠 Ventaja local: Botafogo"
-    },
-    "factor_scores": {
-      "table_position": 0.5,
-      "recent_form": 0.5,
-      "home_advantage": 0.58,
-      "head_to_head": 0.5,
-      "goals_form": 0.5
-    },
-    "event_id": "espn_401865405",
-    "timestamp": "2026-04-28T16:57:43.259285",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "football",
-    "league": "Copa Sudamericana",
-    "home_team": "San Lorenzo",
-    "away_team": "Santos",
-    "predicted_winner": "San Lorenzo",
-    "confidence": 52.0,
-    "factors": {
-      "home_advantage": "🏠 Ventaja local: San Lorenzo"
-    },
-    "factor_scores": {
-      "table_position": 0.5,
-      "recent_form": 0.5,
-      "home_advantage": 0.58,
-      "head_to_head": 0.5,
-      "goals_form": 0.5
-    },
-    "event_id": "espn_401865416",
-    "timestamp": "2026-04-28T16:57:43.268130",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "football",
-    "league": "Copa Sudamericana",
-    "home_team": "Barracas Central",
-    "away_team": "Audax Italiano",
-    "predicted_winner": "Barracas Central",
-    "confidence": 52.0,
-    "factors": {
-      "home_advantage": "🏠 Ventaja local: Barracas Central"
-    },
-    "factor_scores": {
-      "table_position": 0.5,
-      "recent_form": 0.5,
-      "home_advantage": 0.58,
-      "head_to_head": 0.5,
-      "goals_form": 0.5
-    },
-    "event_id": "espn_401865404",
-    "timestamp": "2026-04-28T16:57:43.276567",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "football",
-    "league": "Copa Sudamericana",
-    "home_team": "Deportivo Recoleta",
-    "away_team": "Deportivo Cuenca",
-    "predicted_winner": "Deportivo Recoleta",
-    "confidence": 52.0,
-    "factors": {
-      "home_advantage": "🏠 Ventaja local: Deportivo Recoleta"
-    },
-    "factor_scores": {
-      "table_position": 0.5,
-      "recent_form": 0.5,
-      "home_advantage": 0.58,
-      "head_to_head": 0.5,
-      "goals_form": 0.5
-    },
-    "event_id": "espn_401865415",
-    "timestamp": "2026-04-28T16:57:43.284855",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "football",
-    "league": "Copa Sudamericana",
-    "home_team": "Millonarios",
-    "away_team": "São Paulo",
-    "predicted_winner": "Millonarios",
-    "confidence": 52.0,
-    "factors": {
-      "home_advantage": "🏠 Ventaja local: Millonarios"
-    },
-    "factor_scores": {
-      "table_position": 0.5,
-      "recent_form": 0.5,
-      "home_advantage": 0.58,
-      "head_to_head": 0.5,
-      "goals_form": 0.5
-    },
-    "event_id": "espn_401865411",
-    "timestamp": "2026-04-28T16:57:43.295317",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
-    "sport": "football",
-    "league": "Copa Sudamericana",
-    "home_team": "O'Higgins",
-    "away_team": "Boston River",
-    "predicted_winner": "O'Higgins",
-    "confidence": 52.0,
-    "factors": {
-      "home_advantage": "🏠 Ventaja local: O'Higgins"
-    },
-    "factor_scores": {
-      "table_position": 0.5,
-      "recent_form": 0.5,
-      "home_advantage": 0.58,
-      "head_to_head": 0.5,
-      "goals_form": 0.5
-    },
-    "event_id": "espn_401865412",
-    "timestamp": "2026-04-28T16:57:43.306682",
-    "verified": false,
-    "actual_winner": null,
-    "correct": null
-  },
-  {
     "sport": "nba",
     "league": "NBA",
     "home_team": "New York Knicks",
     "away_team": "Atlanta Hawks",
     "predicted_winner": "New York Knicks",
-    "confidence": 52.0,
-    "factors": {},
+    "confidence": 54.1,
+    "factors": {
+      "record": "📊 New York Knicks (53-29) vs Atlanta Hawks (46-36)",
+      "recent_form": "📈 Forma: WLLW vs LWWL",
+      "points_avg": "🏀 New York Knicks 116pts/g (dif: +6.4)",
+      "head_to_head": "⚔️ H2H: 2-2"
+    },
     "factor_scores": {
-      "record": 0.5,
+      "record": 0.535,
       "recent_form": 0.5,
       "head_to_head": 0.5,
-      "points_avg": 0.5
+      "points_avg": 0.63
     },
     "event_id": "2467678",
-    "timestamp": "2026-04-28T16:57:43.368465",
+    "timestamp": "2026-04-28T17:28:29.161425",
     "verified": false,
     "actual_winner": null,
     "correct": null
@@ -407,16 +90,21 @@
     "home_team": "San Antonio Spurs",
     "away_team": "Portland Trail Blazers",
     "predicted_winner": "San Antonio Spurs",
-    "confidence": 52.0,
-    "factors": {},
+    "confidence": 72.1,
+    "factors": {
+      "record": "📊 San Antonio Spurs (62-20) vs Portland Trail Blazers (42-40)",
+      "recent_form": "🔥 San Antonio Spurs en racha (WLWW)",
+      "points_avg": "🏀 San Antonio Spurs 120pts/g (dif: +8.3)",
+      "head_to_head": "⚔️ H2H: 3-1"
+    },
     "factor_scores": {
-      "record": 0.5,
-      "recent_form": 0.5,
-      "head_to_head": 0.5,
-      "points_avg": 0.5
+      "record": 0.596,
+      "recent_form": 0.75,
+      "head_to_head": 0.75,
+      "points_avg": 0.787
     },
     "event_id": "2467679",
-    "timestamp": "2026-04-28T16:57:43.381577",
+    "timestamp": "2026-04-28T17:28:30.323577",
     "verified": false,
     "actual_winner": null,
     "correct": null
@@ -426,17 +114,22 @@
     "league": "NBA",
     "home_team": "Detroit Pistons",
     "away_team": "Orlando Magic",
-    "predicted_winner": "Detroit Pistons",
-    "confidence": 52.0,
-    "factors": {},
+    "predicted_winner": "Orlando Magic",
+    "confidence": 54.4,
+    "factors": {
+      "record": "📊 Detroit Pistons (60-22) vs Orlando Magic (45-37)",
+      "recent_form": "🔥 Orlando Magic en racha (WLWW)",
+      "points_avg": "🏀 Detroit Pistons 118pts/g (dif: +8.2)",
+      "head_to_head": "⚔️ H2H: 1-3"
+    },
     "factor_scores": {
-      "record": 0.5,
-      "recent_form": 0.5,
-      "head_to_head": 0.5,
-      "points_avg": 0.5
+      "record": 0.571,
+      "recent_form": 0.25,
+      "head_to_head": 0.25,
+      "points_avg": 0.753
     },
     "event_id": "2467960",
-    "timestamp": "2026-04-28T16:57:43.392961",
+    "timestamp": "2026-04-28T17:28:31.434649",
     "verified": false,
     "actual_winner": null,
     "correct": null
@@ -458,7 +151,7 @@
       "side_preference": 0.52
     },
     "event_id": "1465566",
-    "timestamp": "2026-04-28T16:57:43.425416",
+    "timestamp": "2026-04-28T17:28:37.996210",
     "verified": false,
     "actual_winner": null,
     "correct": null
@@ -480,7 +173,7 @@
       "side_preference": 0.52
     },
     "event_id": "1413460",
-    "timestamp": "2026-04-28T16:57:43.436201",
+    "timestamp": "2026-04-28T17:28:38.013378",
     "verified": false,
     "actual_winner": null,
     "correct": null
@@ -502,7 +195,7 @@
       "side_preference": 0.52
     },
     "event_id": "1420926",
-    "timestamp": "2026-04-28T16:57:43.445971",
+    "timestamp": "2026-04-28T17:28:38.021524",
     "verified": false,
     "actual_winner": null,
     "correct": null
@@ -524,7 +217,7 @@
       "side_preference": 0.52
     },
     "event_id": "1413461",
-    "timestamp": "2026-04-28T16:57:43.455821",
+    "timestamp": "2026-04-28T17:28:38.031162",
     "verified": false,
     "actual_winner": null,
     "correct": null
@@ -546,7 +239,385 @@
       "side_preference": 0.52
     },
     "event_id": "1465567",
-    "timestamp": "2026-04-28T16:57:43.465715",
+    "timestamp": "2026-04-28T17:28:38.040530",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Champions League",
+    "home_team": "Paris SG",
+    "away_team": "Bayern Munich",
+    "predicted_winner": "Paris SG",
+    "confidence": 65.7,
+    "factors": {
+      "ia_factor_1": "🤖 Ventaja de jugar en casa",
+      "ia_factor_2": "🤖 Promedio de goles por partido",
+      "ia_factor_3": "🤖 Forma reciente de ambos equipos",
+      "record": "📋 Paris SG () vs Bayern Munich ()",
+      "form": "📈 Forma: Paris SG (WLWWW) vs Bayern Munich (LWWWW)"
+    },
+    "factor_scores": {
+      "table_position": 0.67,
+      "recent_form": 0.67,
+      "home_advantage": 0.58,
+      "head_to_head": 0.67,
+      "goals_form": 0.67
+    },
+    "event_id": "2466172",
+    "timestamp": "2026-04-28T17:29:23.122510",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Champions League",
+    "home_team": "Atlético Madrid",
+    "away_team": "Arsenal",
+    "predicted_winner": "Arsenal",
+    "confidence": 72.5,
+    "factors": {
+      "ia_factor_1": "🤖 Forma reciente de Arsenal",
+      "ia_factor_2": "🤖 Promedio de goles por partido de Arsenal",
+      "ia_factor_3": "🤖 Defensa sólida de Arsenal",
+      "record": "📋 Atlético Madrid () vs Arsenal ()",
+      "form": "📈 Forma: Atlético Madrid (WWLWL) vs Arsenal (WWWWW)"
+    },
+    "factor_scores": {
+      "table_position": 0.25,
+      "recent_form": 0.25,
+      "home_advantage": 0.42,
+      "head_to_head": 0.25,
+      "goals_form": 0.25
+    },
+    "event_id": "2466173",
+    "timestamp": "2026-04-28T17:29:23.145111",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Libertadores",
+    "home_team": "Lanús",
+    "away_team": "Liga de Quito",
+    "predicted_winner": "Liga de Quito",
+    "confidence": 65.7,
+    "factors": {
+      "ia_factor_1": "🤖 Forma reciente de Liga de Quito",
+      "ia_factor_2": "🤖 Promedio de goles de Liga de Quito",
+      "ia_factor_3": "🤖 Defensa sólida de Liga de Quito",
+      "record": "📋 Lanús (1-0-1) vs Liga de Quito (2-0-0)",
+      "form": "📈 Forma: Lanús (WL) vs Liga de Quito (WW)"
+    },
+    "factor_scores": {
+      "table_position": 0.32999999999999996,
+      "recent_form": 0.32999999999999996,
+      "home_advantage": 0.42,
+      "head_to_head": 0.32999999999999996,
+      "goals_form": 0.32999999999999996
+    },
+    "event_id": "espn_401865510",
+    "timestamp": "2026-04-28T17:29:23.193774",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Libertadores",
+    "home_team": "Libertad",
+    "away_team": "Independiente del Valle",
+    "predicted_winner": "Independiente del Valle",
+    "confidence": 65.7,
+    "factors": {
+      "ia_factor_1": "🤖 Forma reciente",
+      "ia_factor_2": "🤖 Promedio de goles",
+      "ia_factor_3": "🤖 Rendimiento en la competición",
+      "record": "📋 Libertad (0-0-2) vs Independiente del Valle (1-1-0)",
+      "form": "📈 Forma: Libertad (LL) vs Independiente del Valle (WD)"
+    },
+    "factor_scores": {
+      "table_position": 0.32999999999999996,
+      "recent_form": 0.32999999999999996,
+      "home_advantage": 0.42,
+      "head_to_head": 0.32999999999999996,
+      "goals_form": 0.32999999999999996
+    },
+    "event_id": "espn_401865511",
+    "timestamp": "2026-04-28T17:29:23.251484",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Libertadores",
+    "home_team": "Universidad Central",
+    "away_team": "Rosario Central",
+    "predicted_winner": "Universidad Central",
+    "confidence": 65.7,
+    "factors": {
+      "ia_factor_1": "🤖 Promedio de goles por partido",
+      "ia_factor_2": "🤖 Ventaja de localía",
+      "ia_factor_3": "🤖 Capacidad ofensiva",
+      "record": "📋 Universidad Central (1-0-1) vs Rosario Central (1-1-0)",
+      "form": "📈 Forma: Universidad Central (LW) vs Rosario Central (WD)"
+    },
+    "factor_scores": {
+      "table_position": 0.67,
+      "recent_form": 0.67,
+      "home_advantage": 0.58,
+      "head_to_head": 0.67,
+      "goals_form": 0.67
+    },
+    "event_id": "espn_401865515",
+    "timestamp": "2026-04-28T17:29:23.289552",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Libertadores",
+    "home_team": "Cruzeiro",
+    "away_team": "Boca Juniors",
+    "predicted_winner": "Boca Juniors",
+    "confidence": 72.5,
+    "factors": {
+      "ia_factor_1": "🤖 Forma reciente de Boca Juniors",
+      "ia_factor_2": "🤖 Diferencia en promedio de goles",
+      "ia_factor_3": "🤖 Ventaja de jugar en casa para Cruzeiro",
+      "record": "📋 Cruzeiro (1-0-1) vs Boca Juniors (2-0-0)",
+      "form": "📈 Forma: Cruzeiro (LW) vs Boca Juniors (WW)"
+    },
+    "factor_scores": {
+      "table_position": 0.25,
+      "recent_form": 0.25,
+      "home_advantage": 0.42,
+      "head_to_head": 0.25,
+      "goals_form": 0.25
+    },
+    "event_id": "espn_401865505",
+    "timestamp": "2026-04-28T17:29:23.317195",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Libertadores",
+    "home_team": "Deportes Tolima",
+    "away_team": "Coquimbo Unido",
+    "predicted_winner": "Deportes Tolima",
+    "confidence": 65.7,
+    "factors": {
+      "ia_factor_1": "🤖 Ventaja del estadio",
+      "ia_factor_2": "🤖 Promedio de goles recibidos",
+      "ia_factor_3": "🤖 Altitud del estadio",
+      "record": "📋 Deportes Tolima (0-1-1) vs Coquimbo Unido (1-1-0)",
+      "form": "📈 Forma: Deportes Tolima (DWLWW) vs Coquimbo Unido (WD)"
+    },
+    "factor_scores": {
+      "table_position": 0.67,
+      "recent_form": 0.67,
+      "home_advantage": 0.58,
+      "head_to_head": 0.67,
+      "goals_form": 0.67
+    },
+    "event_id": "espn_401865506",
+    "timestamp": "2026-04-28T17:29:23.343936",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Libertadores",
+    "home_team": "Sporting Cristal",
+    "away_team": "Atlético Junior",
+    "predicted_winner": "Sporting Cristal",
+    "confidence": 75.0,
+    "factors": {
+      "ia_factor_1": "🤖 Forma reciente",
+      "ia_factor_2": "🤖 Promedio de goles",
+      "ia_factor_3": "🤖 Posición en la tabla",
+      "record": "📋 Sporting Cristal (1-0-1) vs Atlético Junior (0-1-1)",
+      "form": "📈 Forma: Sporting Cristal (WLWWD) vs Atlético Junior (LD)"
+    },
+    "factor_scores": {
+      "table_position": 0.78,
+      "recent_form": 0.78,
+      "home_advantage": 0.58,
+      "head_to_head": 0.78,
+      "goals_form": 0.78
+    },
+    "event_id": "espn_401865514",
+    "timestamp": "2026-04-28T17:29:23.371217",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Sudamericana",
+    "home_team": "Botafogo",
+    "away_team": "Independiente Petrolero",
+    "predicted_winner": "Botafogo",
+    "confidence": 72.4,
+    "factors": {
+      "ia_factor_1": "🤖 Forma reciente",
+      "ia_factor_2": "🤖 Promedio de goles",
+      "ia_factor_3": "🤖 Ventaja de localía",
+      "record": "📋 Botafogo (1-1-0) vs Independiente Petrolero (0-0-2)",
+      "form": "📈 Forma: Botafogo (WD) vs Independiente Petrolero (LLW)"
+    },
+    "factor_scores": {
+      "table_position": 0.75,
+      "recent_form": 0.75,
+      "home_advantage": 0.58,
+      "head_to_head": 0.75,
+      "goals_form": 0.75
+    },
+    "event_id": "espn_401865405",
+    "timestamp": "2026-04-28T17:29:23.398191",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Sudamericana",
+    "home_team": "San Lorenzo",
+    "away_team": "Santos",
+    "predicted_winner": "San Lorenzo",
+    "confidence": 72.4,
+    "factors": {
+      "ia_factor_1": "🤖 Forma reciente de San Lorenzo",
+      "ia_factor_2": "🤖 Diferencia en promedio de goles",
+      "ia_factor_3": "🤖 Ventaja de jugar en casa",
+      "record": "📋 San Lorenzo (1-1-0) vs Santos (0-1-1)",
+      "form": "📈 Forma: San Lorenzo (WD) vs Santos (DL)"
+    },
+    "factor_scores": {
+      "table_position": 0.75,
+      "recent_form": 0.75,
+      "home_advantage": 0.58,
+      "head_to_head": 0.75,
+      "goals_form": 0.75
+    },
+    "event_id": "espn_401865416",
+    "timestamp": "2026-04-28T17:29:23.427573",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Sudamericana",
+    "home_team": "Barracas Central",
+    "away_team": "Audax Italiano",
+    "predicted_winner": "Audax Italiano",
+    "confidence": 65.7,
+    "factors": {
+      "ia_factor_1": "🤖 Forma reciente de Audax Italiano",
+      "ia_factor_2": "🤖 Promedio de goles por partido",
+      "ia_factor_3": "🤖 Falta de enfrentamientos recientes",
+      "record": "📋 Barracas Central (0-2-0) vs Audax Italiano (1-0-1)",
+      "form": "📈 Forma: Barracas Central (DD) vs Audax Italiano (WLW)"
+    },
+    "factor_scores": {
+      "table_position": 0.32999999999999996,
+      "recent_form": 0.32999999999999996,
+      "home_advantage": 0.42,
+      "head_to_head": 0.32999999999999996,
+      "goals_form": 0.32999999999999996
+    },
+    "event_id": "espn_401865404",
+    "timestamp": "2026-04-28T17:29:23.459801",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Sudamericana",
+    "home_team": "Deportivo Recoleta",
+    "away_team": "Deportivo Cuenca",
+    "predicted_winner": "Deportivo Cuenca",
+    "confidence": 65.7,
+    "factors": {
+      "ia_factor_1": "🤖 Forma reciente",
+      "ia_factor_2": "🤖 Promedio de goles",
+      "ia_factor_3": "🤖 Ventaja en la tabla",
+      "record": "📋 Deportivo Recoleta (0-2-0) vs Deportivo Cuenca (1-0-1)",
+      "form": "📈 Forma: Deportivo Recoleta (DDW) vs Deportivo Cuenca (LWW)"
+    },
+    "factor_scores": {
+      "table_position": 0.32999999999999996,
+      "recent_form": 0.32999999999999996,
+      "home_advantage": 0.42,
+      "head_to_head": 0.32999999999999996,
+      "goals_form": 0.32999999999999996
+    },
+    "event_id": "espn_401865415",
+    "timestamp": "2026-04-28T17:29:23.490130",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Sudamericana",
+    "home_team": "Millonarios",
+    "away_team": "São Paulo",
+    "predicted_winner": "Millonarios",
+    "confidence": 65.7,
+    "factors": {
+      "ia_factor_1": "🤖 Ventaja del estadio",
+      "ia_factor_2": "🤖 Promedio de goles recibidos de Millonarios",
+      "ia_factor_3": "🤖 Altitud del estadio",
+      "record": "📋 Millonarios (1-0-1) vs São Paulo (2-0-0)",
+      "form": "📈 Forma: Millonarios (WLW) vs São Paulo (WW)"
+    },
+    "factor_scores": {
+      "table_position": 0.67,
+      "recent_form": 0.67,
+      "home_advantage": 0.58,
+      "head_to_head": 0.67,
+      "goals_form": 0.67
+    },
+    "event_id": "espn_401865411",
+    "timestamp": "2026-04-28T17:29:23.522866",
+    "verified": false,
+    "actual_winner": null,
+    "correct": null
+  },
+  {
+    "sport": "football",
+    "league": "Copa Sudamericana",
+    "home_team": "O'Higgins",
+    "away_team": "Boston River",
+    "predicted_winner": "O'Higgins",
+    "confidence": 72.4,
+    "factors": {
+      "ia_factor_1": "🤖 Forma reciente de O'Higgins",
+      "ia_factor_2": "🤖 Promedio de goles de O'Higgins",
+      "ia_factor_3": "🤖 Posición en la tabla de O'Higgins",
+      "record": "📋 O'Higgins (1-0-1) vs Boston River (0-0-2)",
+      "form": "📈 Forma: O'Higgins (LW) vs Boston River (LLW)"
+    },
+    "factor_scores": {
+      "table_position": 0.75,
+      "recent_form": 0.75,
+      "home_advantage": 0.58,
+      "head_to_head": 0.75,
+      "goals_form": 0.75
+    },
+    "event_id": "espn_401865412",
+    "timestamp": "2026-04-28T17:29:23.552562",
     "verified": false,
     "actual_winner": null,
     "correct": null

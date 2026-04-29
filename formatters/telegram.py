@@ -75,6 +75,16 @@ def format_football_match(match_data: dict) -> str:
         lines.append(f"  🎲 *Marcador:* {scores_text}")
         lines.append(f"     xG: {exact['home_xg']}-{exact['away_xg']}")
 
+    # Análisis IA (Groq)
+    ai_analysis = match_data.get("ai_analysis", "")
+    ai_pick = match_data.get("ai_pick", "")
+    ai_odds = match_data.get("ai_odds", "")
+    if ai_analysis:
+        lines.append("")
+        lines.append(f"  🤖 *Análisis IA:* {ai_analysis}")
+    if ai_pick:
+        lines.append(f"  💡 *Pick:* {ai_pick} (cuota ~{ai_odds})")
+
     return "\n".join(lines)
 
 

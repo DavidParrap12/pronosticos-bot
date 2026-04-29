@@ -1,4 +1,9 @@
 import os
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # dotenv no instalado, usará os.getenv directo
 
 # ============================================================
 # Configuración Bot Original (Goles en Vivo)
@@ -22,6 +27,9 @@ THESPORTSDB_BASE = f"https://www.thesportsdb.com/api/v1/json/{THESPORTSDB_KEY}"
 PANDASCORE_TOKEN = os.getenv("PANDASCORE_TOKEN", "bDkJQyPMExD3AttJV2hdpiYaPK0mXevDCUKevEo8qIx1kGo1E8A")
 PANDASCORE_BASE = "https://api.pandascore.co"
 
+
+# Groq — IA para análisis de partidos (gratis)
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 # ============================================================
 # Ligas a monitorear
 # ============================================================
